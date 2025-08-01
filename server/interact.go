@@ -75,12 +75,12 @@ func (i *Interact) sendFormAndWaitResponse(minecraftForm form.MinecraftForm) (re
 
 		switch minecraftForm.ID() {
 		case form.FormTypeMessage:
-			if strings.Contains(strings.ToLower(string(resp)), "true") {
+			if strings.TrimSuffix(string(resp), "\n") == "true" {
 				return true, nil
 			}
 			return false, nil
 		case form.FormTypeAction:
-			result, err := strconv.ParseInt(string(resp), 10, 32)
+			result, err := strconv.ParseInt(strings.TrimSuffix(string(resp), "\n"), 10, 32)
 			if err != nil {
 				return nil, fmt.Errorf("SendFormAndWaitResponse: %v", err)
 			}
