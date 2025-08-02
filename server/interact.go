@@ -36,7 +36,7 @@ func NewInteract(conn *minecraft.Conn) *Interact {
 }
 
 // sendFormAndWaitResponse ..
-func (i *Interact) sendFormAndWaitResponse(minecraftForm form.MinecraftForm) (resp any, isUserCanel bool, err error) {
+func (i *Interact) sendFormAndWaitResponse(minecraftForm form.MinecraftForm) (resp any, isUserCancel bool, err error) {
 	for {
 		i.waiter, i.downWaiter = context.WithCancel(context.Background())
 
@@ -62,9 +62,9 @@ func (i *Interact) sendFormAndWaitResponse(minecraftForm form.MinecraftForm) (re
 			)
 		}
 
-		canelReason, ok := i.clientResp.CancelReason.Value()
+		cancelReason, ok := i.clientResp.CancelReason.Value()
 		if ok {
-			if canelReason == packet.ModalFormCancelReasonUserClosed {
+			if cancelReason == packet.ModalFormCancelReasonUserClosed {
 				return nil, true, nil
 			}
 			time.Sleep(time.Second / 20)
@@ -135,7 +135,7 @@ func (i *Interact) sendFormAndWaitResponse(minecraftForm form.MinecraftForm) (re
 func (i *Interact) sendLargeActionFormAndWaitResponse(
 	actionForm form.ActionForm,
 	pageSize int,
-) (resp int32, isUserCanel bool, err error) {
+) (resp int32, isUserCancel bool, err error) {
 	pageSize = max(1, pageSize)
 	maxPage := max(1, (len(actionForm.Buttons)+pageSize-1)/pageSize)
 	currentPage := 1
@@ -191,11 +191,11 @@ func (i *Interact) sendLargeActionFormAndWaitResponse(
 			Icon: form.ActionFormIconNone{},
 		})
 
-		anyResp, isUserCanel, err := i.sendFormAndWaitResponse(newForm)
+		anyResp, isUserCancel, err := i.sendFormAndWaitResponse(newForm)
 		if err != nil {
 			return 0, false, fmt.Errorf("SendLargeActionFormAndWaitResponse: %v", err)
 		}
-		if isUserCanel {
+		if isUserCancel {
 			return 0, true, nil
 		}
 
@@ -211,9 +211,12 @@ func (i *Interact) sendLargeActionFormAndWaitResponse(
 		case nextPageIndex:
 			currentPage++
 		case jumpPageIndex:
-			anyResp, isUserCanel, err := i.sendFormAndWaitResponse(form.ModalForm{
+			anyResp, isUserCancel, err := i.sendFormAndWaitResponse(form.ModalForm{
 				Title: "跳转",
 				Contents: []form.ModalFormElement{
+					form.ModalFormElementLabel{
+						Text: "您将§r§e跳转§r到特定的页码",
+					},
 					form.ModalFormElementInput{
 						Text:        "跳转到",
 						Default:     "",
@@ -224,8 +227,8 @@ func (i *Interact) sendLargeActionFormAndWaitResponse(
 			if err != nil {
 				return 0, false, fmt.Errorf("SendLargeActionFormAndWaitResponse: %v", err)
 			}
-			if !isUserCanel {
-				jumpTo, err := strconv.ParseInt(anyResp.([]any)[0].(string), 10, 32)
+			if !isUserCancel {
+				jumpTo, err := strconv.ParseInt(anyResp.([]any)[1].(string), 10, 32)
 				if err != nil {
 					jumpTo = int64(currentPage)
 				}
@@ -254,8 +257,8 @@ func (i *Interact) sendLargeActionFormAndWaitResponse(
 //   - [form.ModalFormElementSlider] -> int32
 //   - [form.ModalFormElementStepSlider] -> int32
 //
-// isUserCanel 指示表单是否是由用户通过叉号 (×) 关闭的
-func (i *Interact) SendFormAndWaitResponse(minecraftForm form.MinecraftForm) (resp any, isUserCanel bool, err error) {
+// isUserCancel 指示表单是否是由用户通过叉号 (×) 关闭的
+func (i *Interact) SendFormAndWaitResponse(minecraftForm form.MinecraftForm) (resp any, isUserCancel bool, err error) {
 	i.mu.Lock()
 	defer i.mu.Unlock()
 	return i.sendFormAndWaitResponse(minecraftForm)
@@ -263,11 +266,11 @@ func (i *Interact) SendFormAndWaitResponse(minecraftForm form.MinecraftForm) (re
 
 // SendLargeActionFormAndWaitResponse 向客户端发送大型的 ActionForm，
 // 这意味着 actionForm.Buttons 具有很多项目，需要按 pageSize 分页拆分。
-// isUserCanel 指示表单是否是由用户通过叉号 (×) 关闭的
+// isUserCancel 指示表单是否是由用户通过叉号 (×) 关闭的
 func (i *Interact) SendLargeActionFormAndWaitResponse(
 	actionForm form.ActionForm,
 	pageSize int,
-) (resp int32, isUserCanel bool, err error) {
+) (resp int32, isUserCancel bool, err error) {
 	i.mu.Lock()
 	defer i.mu.Unlock()
 	return i.sendLargeActionFormAndWaitResponse(actionForm, pageSize)

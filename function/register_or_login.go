@@ -123,7 +123,7 @@ func (f *Function) register() error {
 			Title:   "注册失败",
 			Content: loginResponse.ErrorInfo,
 			Button1: "确定",
-			Button2: "返回上一级",
+			Button2: "返回上一级菜单",
 		})
 		if err != nil {
 			return fmt.Errorf("register: %v", err)
@@ -191,7 +191,7 @@ func (f *Function) login() error {
 			Title:   "登录失败",
 			Content: loginResponse.ErrorInfo,
 			Button1: "确定",
-			Button2: "返回上一级",
+			Button2: "返回上一级菜单",
 		})
 		if err != nil {
 			return fmt.Errorf("login: %v", err)

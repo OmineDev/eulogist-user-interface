@@ -6,7 +6,10 @@ const (
 	StdAuthServerAddress = "http://127.0.0.1:8080/eulogist_api"
 )
 
-const UserPasswordSlat = "YoRHa"
+const (
+	UserPasswordSlat = "YoRHa"
+	DefaultPageSize  = 5
+)
 
 const (
 	AuthServerAccountTypeStd uint8 = iota

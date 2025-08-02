@@ -8,12 +8,12 @@ import (
 	"github.com/OmineDev/eulogist-user-interface/form"
 )
 
-// ShowPanel 向用户展示赞颂者的控制面板。
+// MainPanel 向用户展示赞颂者的控制面板。
 // 在调用它前必须先调用 RequestUserInfo 获取用户信息
-func (f *Function) ShowPanel() (exitGame bool, err error) {
+func (f *Function) MainPanel() (exitGame bool, err error) {
 	for {
 		if f.userData == nil {
-			return false, fmt.Errorf("ShowPanel: Needs call RequestUserInfo first")
+			return false, fmt.Errorf("MainPanel: Needs call RequestUserInfo first")
 		}
 
 		minecraftForm := form.ActionForm{

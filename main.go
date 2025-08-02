@@ -24,7 +24,7 @@ func test() {
 		panic(err)
 	}
 
-	// clientFunction.RegisterOrLogin()
+	clientFunction.RegisterOrLogin()
 	clientFunction.RequestUserInfo()
-	clientFunction.ShowPanel()
+	clientFunction.MainPanel()
 }
