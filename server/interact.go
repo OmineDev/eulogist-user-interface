@@ -131,6 +131,116 @@ func (i *Interact) sendFormAndWaitResponse(minecraftForm form.MinecraftForm) (re
 	}
 }
 
+// sendActionFormAndWaitResponse ..
+func (i *Interact) sendActionFormAndWaitResponse(
+	actionForm form.ActionForm,
+	pageSize int,
+) (resp int32, isUserCanel bool, err error) {
+	pageSize = max(1, pageSize)
+	maxPage := max(1, (len(actionForm.Buttons)+pageSize-1)/pageSize)
+	currentPage := 1
+
+	for {
+		var lastPageIndex int32
+		var nextPageIndex int32
+		var jumpPageIndex int32
+		var exitIndex int32
+
+		startIndexInclude := int32((currentPage - 1) * pageSize)
+		endIndexNotInclude := int32(min(currentPage*pageSize, len(actionForm.Buttons)))
+
+		newForm := form.ActionForm{
+			Title:   actionForm.Title,
+			Content: actionForm.Content,
+		}
+		newForm.Content += fmt.Sprintf(
+			"\n\n§r§f当前第 §b%d §f页, 总计 §b%d §f页",
+			currentPage, maxPage,
+		)
+
+		// Append normal entry
+		for i := startIndexInclude; i < endIndexNotInclude; i++ {
+			newForm.Buttons = append(newForm.Buttons, actionForm.Buttons[i])
+		}
+		// Last page button
+		if currentPage > 1 {
+			lastPageIndex = int32(len(newForm.Buttons))
+			newForm.Buttons = append(newForm.Buttons, form.ActionFormElement{
+				Text: "§r§l§2上一页",
+				Icon: form.ActionFormIconNone{},
+			})
+		}
+		// Next page button
+		if currentPage*pageSize < len(actionForm.Buttons) {
+			nextPageIndex = int32(len(newForm.Buttons))
+			newForm.Buttons = append(newForm.Buttons, form.ActionFormElement{
+				Text: "§r§l§2下一页",
+				Icon: form.ActionFormIconNone{},
+			})
+		}
+		// Jump to button
+		jumpPageIndex = int32(len(newForm.Buttons))
+		newForm.Buttons = append(newForm.Buttons, form.ActionFormElement{
+			Text: "§r§l§2跳转到",
+			Icon: form.ActionFormIconNone{},
+		})
+		// Exit button
+		exitIndex = int32(len(newForm.Buttons))
+		newForm.Buttons = append(newForm.Buttons, form.ActionFormElement{
+			Text: "§r§l§c返回上一级菜单",
+			Icon: form.ActionFormIconNone{},
+		})
+
+		anyResp, isUserCanel, err := i.sendFormAndWaitResponse(newForm)
+		if err != nil {
+			return 0, false, fmt.Errorf("SendActionFormAndWaitResponse: %v", err)
+		}
+		if isUserCanel {
+			return 0, true, nil
+		}
+
+		idx := anyResp.(int32)
+		realIndex := startIndexInclude + idx
+		if startIndexInclude <= realIndex && realIndex < endIndexNotInclude {
+			return realIndex, false, nil
+		}
+
+		switch idx {
+		case lastPageIndex:
+			currentPage--
+		case nextPageIndex:
+			currentPage++
+		case jumpPageIndex:
+			anyResp, isUserCanel, err := i.sendFormAndWaitResponse(form.ModalForm{
+				Title: "跳转",
+				Contents: []form.ModalFormElement{
+					form.ModalFormElementInput{
+						Text:        "跳转到",
+						Default:     "",
+						PlaceHolder: fmt.Sprintf("页数 (当前第 %d 页 | 最多 %d 页)", currentPage, maxPage),
+					},
+				},
+			})
+			if err != nil {
+				return 0, false, fmt.Errorf("SendActionFormAndWaitResponse: %v", err)
+			}
+			if isUserCanel {
+				return 0, true, nil
+			}
+
+			jumpTo, err := strconv.ParseInt(anyResp.([]any)[0].(string), 10, 32)
+			if err != nil {
+				jumpTo = int64(currentPage)
+			}
+			currentPage = min(max(int(jumpTo), 1), maxPage)
+		case exitIndex:
+			return 0, true, nil
+		default:
+			panic("SendActionFormAndWaitResponse: Should nerver happened")
+		}
+	}
+}
+
 // SendFormAndWaitResponse 发送 minecraftForm 所指示的表单给客户端并等待回应。
 //
 // resp 是客户端的回应，只可能为：
@@ -151,6 +261,17 @@ func (i *Interact) SendFormAndWaitResponse(minecraftForm form.MinecraftForm) (re
 	i.mu.Lock()
 	defer i.mu.Unlock()
 	return i.sendFormAndWaitResponse(minecraftForm)
+}
+
+// SendActionFormAndWaitResponse 向客户端发送大型的 ActionForm，
+// 这意味着 actionForm.Buttons 具有很多项目，需要按 pageSize 分页拆分
+func (i *Interact) SendActionFormAndWaitResponse(
+	actionForm form.ActionForm,
+	pageSize int,
+) (resp int32, isUserCanel bool, err error) {
+	i.mu.Lock()
+	defer i.mu.Unlock()
+	return i.sendActionFormAndWaitResponse(actionForm, pageSize)
 }
 
 // handlePacket 不断地读取数据包，
