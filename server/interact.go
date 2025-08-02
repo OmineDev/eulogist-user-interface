@@ -131,8 +131,8 @@ func (i *Interact) sendFormAndWaitResponse(minecraftForm form.MinecraftForm) (re
 	}
 }
 
-// sendActionFormAndWaitResponse ..
-func (i *Interact) sendActionFormAndWaitResponse(
+// sendLargeActionFormAndWaitResponse ..
+func (i *Interact) sendLargeActionFormAndWaitResponse(
 	actionForm form.ActionForm,
 	pageSize int,
 ) (resp int32, isUserCanel bool, err error) {
@@ -193,7 +193,7 @@ func (i *Interact) sendActionFormAndWaitResponse(
 
 		anyResp, isUserCanel, err := i.sendFormAndWaitResponse(newForm)
 		if err != nil {
-			return 0, false, fmt.Errorf("SendActionFormAndWaitResponse: %v", err)
+			return 0, false, fmt.Errorf("SendLargeActionFormAndWaitResponse: %v", err)
 		}
 		if isUserCanel {
 			return 0, true, nil
@@ -222,7 +222,7 @@ func (i *Interact) sendActionFormAndWaitResponse(
 				},
 			})
 			if err != nil {
-				return 0, false, fmt.Errorf("SendActionFormAndWaitResponse: %v", err)
+				return 0, false, fmt.Errorf("SendLargeActionFormAndWaitResponse: %v", err)
 			}
 			if !isUserCanel {
 				jumpTo, err := strconv.ParseInt(anyResp.([]any)[0].(string), 10, 32)
@@ -234,7 +234,7 @@ func (i *Interact) sendActionFormAndWaitResponse(
 		case exitIndex:
 			return 0, true, nil
 		default:
-			panic("SendActionFormAndWaitResponse: Should nerver happened")
+			panic("SendLargeActionFormAndWaitResponse: Should nerver happened")
 		}
 	}
 }
@@ -261,15 +261,16 @@ func (i *Interact) SendFormAndWaitResponse(minecraftForm form.MinecraftForm) (re
 	return i.sendFormAndWaitResponse(minecraftForm)
 }
 
-// SendActionFormAndWaitResponse 向客户端发送大型的 ActionForm，
-// 这意味着 actionForm.Buttons 具有很多项目，需要按 pageSize 分页拆分
-func (i *Interact) SendActionFormAndWaitResponse(
+// SendLargeActionFormAndWaitResponse 向客户端发送大型的 ActionForm，
+// 这意味着 actionForm.Buttons 具有很多项目，需要按 pageSize 分页拆分。
+// isUserCanel 指示表单是否是由用户通过叉号 (×) 关闭的
+func (i *Interact) SendLargeActionFormAndWaitResponse(
 	actionForm form.ActionForm,
 	pageSize int,
 ) (resp int32, isUserCanel bool, err error) {
 	i.mu.Lock()
 	defer i.mu.Unlock()
-	return i.sendActionFormAndWaitResponse(actionForm, pageSize)
+	return i.sendLargeActionFormAndWaitResponse(actionForm, pageSize)
 }
 
 // handlePacket 不断地读取数据包，
