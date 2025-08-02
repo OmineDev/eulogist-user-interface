@@ -224,15 +224,13 @@ func (i *Interact) sendActionFormAndWaitResponse(
 			if err != nil {
 				return 0, false, fmt.Errorf("SendActionFormAndWaitResponse: %v", err)
 			}
-			if isUserCanel {
-				return 0, true, nil
+			if !isUserCanel {
+				jumpTo, err := strconv.ParseInt(anyResp.([]any)[0].(string), 10, 32)
+				if err != nil {
+					jumpTo = int64(currentPage)
+				}
+				currentPage = min(max(int(jumpTo), 1), maxPage)
 			}
-
-			jumpTo, err := strconv.ParseInt(anyResp.([]any)[0].(string), 10, 32)
-			if err != nil {
-				jumpTo = int64(currentPage)
-			}
-			currentPage = min(max(int(jumpTo), 1), maxPage)
 		case exitIndex:
 			return 0, true, nil
 		default:
