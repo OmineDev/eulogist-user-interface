@@ -8,8 +8,8 @@ import (
 	"github.com/OmineDev/eulogist-user-interface/form"
 )
 
-// RequestUserInfo 请求用户的赞颂者账户数据。
-// 如果之前已经成功得到了数据，则不进行任何操作
+// ShowPanel 向用户展示赞颂者的控制面板。
+// 在调用它前必须先调用 RequestUserInfo 获取用户信息
 func (f *Function) ShowPanel() (exitGame bool, err error) {
 	for {
 		if f.userData == nil {
@@ -47,6 +47,7 @@ func (f *Function) ShowPanel() (exitGame bool, err error) {
 	}
 }
 
+// formatUserData ..
 func (f *Function) formatUserData() (content string) {
 	content = fmt.Sprintf(
 		"基本用户信息\n  - 用户名: §r§e%s§r\n",
