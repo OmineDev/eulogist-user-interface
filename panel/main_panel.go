@@ -29,6 +29,10 @@ func (p *Panel) MainPanel() (exitGame bool, err error) {
 					Icon: form.ActionFormIconNone{},
 				},
 				{
+					Text: "编辑您自己的赞颂者账号信息",
+					Icon: form.ActionFormIconNone{},
+				},
+				{
 					Text: "进入服主管理面板",
 					Icon: form.ActionFormIconNone{},
 				},
@@ -57,7 +61,9 @@ func (p *Panel) MainPanel() (exitGame bool, err error) {
 			err = p.AuthHelperPanel()
 		case 2:
 		case 3:
+			err = p.ServerOwnerPanel()
 		case 4:
+		case 5:
 			return true, nil
 		}
 		if err != nil {

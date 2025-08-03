@@ -6,7 +6,7 @@ import (
 	"github.com/OmineDev/eulogist-user-interface/form"
 )
 
-// AuthHelperPanel 向用户展示赞颂者腐竹用户的控制面板。
+// AuthHelperPanel 向用户展示验证服务账户的管理面板。
 // 从设计上讲，AuthHelperPanel 应该从 MainPanel 调用
 func (p *Panel) AuthHelperPanel() error {
 	for {
@@ -31,6 +31,10 @@ func (p *Panel) AuthHelperPanel() error {
 				},
 				{
 					Text: "删除已添加的 MC 账号",
+					Icon: form.ActionFormIconNone{},
+				},
+				{
+					Text: "下载标准验证服务的账户凭据",
 					Icon: form.ActionFormIconNone{},
 				},
 				{
@@ -79,8 +83,9 @@ func (p *Panel) AuthHelperPanel() error {
 		case 4:
 			err = p.f.DeleteHelper()
 		case 5:
-			err = p.f.SetPEAuth()
 		case 6:
+			err = p.f.SetPEAuth()
+		case 7:
 			return nil
 		}
 		if err != nil {
