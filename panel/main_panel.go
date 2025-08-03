@@ -64,6 +64,7 @@ func (p *Panel) MainPanel() (exitGame bool, err error) {
 		case 1:
 			err = p.AuthHelperPanel()
 		case 2:
+			err = p.ChangeUserInfo()
 		case 3:
 		case 4:
 			err = p.ServerOwnerPanel()
@@ -118,7 +119,7 @@ func (p *Panel) formatUserData() (content string) {
 	if len(userData.ProvidedPeAuthData) > 0 {
 		content += "  - PE Auth: §r§a正在使用§r\n"
 	} else {
-		content += "  - PE-Auth: §r§7未使用§r\n"
+		content += "  - PE Auth: §r§7未使用§r\n"
 	}
 
 	if userData.DisableGlobalOpertorVerify {

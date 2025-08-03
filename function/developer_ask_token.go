@@ -102,7 +102,7 @@ func (f *Function) DevAskToken() error {
 					"The following string is your token of the corresponding std auth helper.\n" +
 					"Please §r§l§eKEEP IT ON YOUR OWN§r, because it can be directly used for bot, \n" +
 					"like ToolDelta or Neo-Omega.\n" +
-					"Note that the token will expire if Eulogist Admins disable your permission.",
+					"Note that the token will expire if §r§aEulogist Admins§r disable your permission.",
 			},
 			form.ModalFormElementInput{
 				Text:        "Standard Auth Server Address",
