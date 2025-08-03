@@ -106,7 +106,7 @@ func (f *Function) DevAskToken() error {
 			},
 			form.ModalFormElementInput{
 				Text:        "Standard Auth Server Address",
-				Default:     define.StdAuthServerAddress,
+				Default:     define.StdAuthServerPhoenixAPI,
 				PlaceHolder: "Standard Auth Server Address",
 			},
 			form.ModalFormElementInput{

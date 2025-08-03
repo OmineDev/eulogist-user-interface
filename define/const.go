@@ -3,7 +3,8 @@ package define
 const EulogistConfigFileName = "eulogist_config.json"
 
 const (
-	StdAuthServerAddress = "http://127.0.0.1:8080/eulogist_api"
+	StdAuthServerPhoenixAPI = "http://127.0.0.1:8080"
+	StdAuthServerAddress    = "http://127.0.0.1:8080/eulogist_api"
 )
 
 const (
