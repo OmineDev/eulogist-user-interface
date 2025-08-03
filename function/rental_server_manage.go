@@ -234,82 +234,97 @@ type AllowListDeleteResponse struct {
 
 // RentalServerManageDelete ..
 func (f *Function) RentalServerManageDelete(rentalServerNumber string) error {
-	allowListGetResp, err := SendAndGetHttpResponse[AllowListGetResponse](
-		fmt.Sprintf("%s/get_allow_list_config", define.StdAuthServerAddress),
-		AllowListGetRequest{
-			Token:              f.config.EulogistToken,
-			RentalServerNumber: rentalServerNumber,
-		},
-	)
-	if err != nil {
-		return fmt.Errorf("RentalServerManageDelete: %v", err)
-	}
-
-	if !allowListGetResp.Success {
-		_, _, err := f.interact.SendFormAndWaitResponse(form.MessageForm{
-			Title:   "错误",
-			Content: allowListGetResp.ErrorInfo,
-			Button1: "确定",
-			Button2: "返回上一级菜单",
-		})
-		if err != nil {
-			return fmt.Errorf("RentalServerManageDelete: %v", err)
-		}
-		return nil
-	}
-
-	actionForm := form.ActionForm{
-		Title: "删除已有授权",
-	}
-	if len(allowListGetResp.UserNames) == 0 {
-		actionForm.Content = "您目前还没有授权任何赞颂者用户, 因此您无法§r§e删除§r任何授权。"
-	} else {
-		actionForm.Content = fmt.Sprintf(
-			"您目前已授权了 §r§b%d§r 个赞颂者用户。\n请从中选择一个, 然后将其§r§e删除§r。",
-			len(allowListGetResp.UserNames),
+	for {
+		allowListGetResp, err := SendAndGetHttpResponse[AllowListGetResponse](
+			fmt.Sprintf("%s/get_allow_list_config", define.StdAuthServerAddress),
+			AllowListGetRequest{
+				Token:              f.config.EulogistToken,
+				RentalServerNumber: rentalServerNumber,
+			},
 		)
-	}
-	for _, value := range allowListGetResp.UserNames {
-		actionForm.Buttons = append(actionForm.Buttons, form.ActionFormElement{
-			Text: value,
-			Icon: form.ActionFormIconNone{},
-		})
-	}
+		if err != nil {
+			return fmt.Errorf("RentalServerManageDelete: %v", err)
+		}
 
-	resp, isUserCancel, err := f.interact.SendLargeActionFormAndWaitResponse(actionForm, define.DefaultPageSize)
-	if err != nil {
-		return fmt.Errorf("RentalServerManageDelete: %v", err)
-	}
-	if isUserCancel {
-		return nil
-	}
+		if !allowListGetResp.Success {
+			_, _, err := f.interact.SendFormAndWaitResponse(form.MessageForm{
+				Title:   "错误",
+				Content: allowListGetResp.ErrorInfo,
+				Button1: "确定",
+				Button2: "返回上一级菜单",
+			})
+			if err != nil {
+				return fmt.Errorf("RentalServerManageDelete: %v", err)
+			}
+			return nil
+		}
 
-	allowListDeleteResp, err := SendAndGetHttpResponse[AllowListDeleteResponse](
-		fmt.Sprintf("%s/delete_allow_list_config", define.StdAuthServerAddress),
-		AllowListDeleteRequest{
-			Token:              f.config.EulogistToken,
-			RentalServerNumber: rentalServerNumber,
-			EulogistUserName:   allowListGetResp.UserNames[resp],
-		},
-	)
-	if err != nil {
-		return fmt.Errorf("RentalServerManageDelete: %v", err)
-	}
+		actionForm := form.ActionForm{
+			Title: "删除已有授权",
+		}
+		if len(allowListGetResp.UserNames) == 0 {
+			actionForm.Content = "您目前还没有授权任何赞颂者用户, 因此您无法§r§e删除§r任何授权。"
+		} else {
+			actionForm.Content = fmt.Sprintf(
+				"您目前已授权了 §r§b%d§r 个赞颂者用户。\n请从中选择一个, 然后将其§r§e删除§r。",
+				len(allowListGetResp.UserNames),
+			)
+		}
+		for _, value := range allowListGetResp.UserNames {
+			actionForm.Buttons = append(actionForm.Buttons, form.ActionFormElement{
+				Text: value,
+				Icon: form.ActionFormIconNone{},
+			})
+		}
 
-	if !allowListDeleteResp.Success {
-		_, _, err := f.interact.SendFormAndWaitResponse(form.MessageForm{
-			Title:   "错误",
-			Content: allowListDeleteResp.ErrorInfo,
+		resp, isUserCancel, err := f.interact.SendLargeActionFormAndWaitResponse(actionForm, define.DefaultPageSize)
+		if err != nil {
+			return fmt.Errorf("RentalServerManageDelete: %v", err)
+		}
+		if isUserCancel {
+			return nil
+		}
+
+		ensure, isUserCancel, err := f.interact.SendFormAndWaitResponse(form.MessageForm{
+			Title:   "二重确认",
+			Content: "您确定要§r§c删除§r目标赞颂者用户的授权吗？",
 			Button1: "确定",
-			Button2: "返回上一级菜单",
+			Button2: "取消",
 		})
 		if err != nil {
 			return fmt.Errorf("RentalServerManageDelete: %v", err)
 		}
+		if isUserCancel || !ensure.(bool) {
+			continue
+		}
+
+		allowListDeleteResp, err := SendAndGetHttpResponse[AllowListDeleteResponse](
+			fmt.Sprintf("%s/delete_allow_list_config", define.StdAuthServerAddress),
+			AllowListDeleteRequest{
+				Token:              f.config.EulogistToken,
+				RentalServerNumber: rentalServerNumber,
+				EulogistUserName:   allowListGetResp.UserNames[resp],
+			},
+		)
+		if err != nil {
+			return fmt.Errorf("RentalServerManageDelete: %v", err)
+		}
+
+		if !allowListDeleteResp.Success {
+			_, _, err := f.interact.SendFormAndWaitResponse(form.MessageForm{
+				Title:   "错误",
+				Content: allowListDeleteResp.ErrorInfo,
+				Button1: "确定",
+				Button2: "返回上一级菜单",
+			})
+			if err != nil {
+				return fmt.Errorf("RentalServerManageDelete: %v", err)
+			}
+			return nil
+		}
+
 		return nil
 	}
-
-	return nil
 }
 
 // RentalServerManage ..

@@ -83,6 +83,7 @@ func (p *Panel) AuthHelperPanel() error {
 		case 4:
 			err = p.f.DeleteHelper()
 		case 5:
+			err = p.f.DevAskToken()
 		case 6:
 			err = p.f.SetPEAuth()
 		case 7:
