@@ -141,10 +141,10 @@ func (i *Interact) sendLargeActionFormAndWaitResponse(
 	currentPage := 1
 
 	for {
-		var lastPageIndex int32
-		var nextPageIndex int32
-		var jumpPageIndex int32
-		var exitIndex int32
+		var lastPageIndex int32 = -1
+		var nextPageIndex int32 = -1
+		var jumpPageIndex int32 = -1
+		var exitIndex int32 = -1
 
 		startIndexInclude := int32((currentPage - 1) * pageSize)
 		endIndexNotInclude := int32(min(currentPage*pageSize, len(actionForm.Buttons)))
@@ -154,7 +154,7 @@ func (i *Interact) sendLargeActionFormAndWaitResponse(
 			Content: actionForm.Content,
 		}
 		newForm.Content += fmt.Sprintf(
-			"\n\n§r§f当前第 §b%d §f页, 总计 §b%d §f页",
+			"\n\n§r§r当前第 §b%d §r页, 总计 §b%d §r页",
 			currentPage, maxPage,
 		)
 

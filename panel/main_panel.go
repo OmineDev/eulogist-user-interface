@@ -1,4 +1,4 @@
-package function
+package panel
 
 import (
 	"fmt"
@@ -10,15 +10,15 @@ import (
 
 // MainPanel 向用户展示赞颂者的控制面板。
 // 在调用它前必须先调用 RequestUserInfo 获取用户信息
-func (f *Function) MainPanel() (exitGame bool, err error) {
+func (p *Panel) MainPanel() (exitGame bool, err error) {
 	for {
-		if f.userData == nil {
+		if p.f.EulogistUserData() == nil {
 			return false, fmt.Errorf("MainPanel: Needs call RequestUserInfo first")
 		}
 
 		minecraftForm := form.ActionForm{
 			Title:   "欢迎您",
-			Content: fmt.Sprintf("%s请选择您要进行的操作。", f.formatUserData()),
+			Content: fmt.Sprintf("%s请选择您要进行的操作。", p.formatUserData()),
 			Buttons: []form.ActionFormElement{
 				{
 					Text: "游玩租赁服",
@@ -43,18 +43,38 @@ func (f *Function) MainPanel() (exitGame bool, err error) {
 			},
 		}
 
-		f.interact.SendFormAndWaitResponse(minecraftForm)
+		resp, isUserCancel, err := p.f.Interact().SendFormAndWaitResponse(minecraftForm)
+		if err != nil {
+			return false, fmt.Errorf("MainPanel: %v", err)
+		}
+		if isUserCancel {
+			continue
+		}
+
+		switch resp.(int32) {
+		case 0:
+		case 1:
+			err = p.AuthHelperPanel()
+		case 2:
+		case 3:
+		case 4:
+			return true, nil
+		}
+		if err != nil {
+			return false, fmt.Errorf("MainPanel: %v", err)
+		}
 	}
 }
 
 // formatUserData ..
-func (f *Function) formatUserData() (content string) {
+func (p *Panel) formatUserData() (content string) {
+	userData := p.f.EulogistUserData()
 	content = fmt.Sprintf(
 		"基本用户信息\n  - 用户名: §r§e%s§r\n",
-		f.userData.UserName,
+		userData.UserName,
 	)
 
-	switch f.userData.UserPermissionLevel {
+	switch userData.UserPermissionLevel {
 	case define.UserPermissionSystem:
 		content += "  - 用户权限: §r§a系统§r\n"
 	case define.UserPermissionAdmin:
@@ -62,52 +82,52 @@ func (f *Function) formatUserData() (content string) {
 	case define.UserPermissionManager:
 		content += "  - 用户权限: §r§e租赁服管理员§r\n"
 	case define.UserPermissionNormal:
-		content += "  - 用户权限: §r§f普通用户§r\n"
+		content += "  - 用户权限: §r§r普通用户§r\n"
 	case define.UserPermissionNone:
 		content += "  - 用户权限: §r§c访客§r\n"
 	default:
-		content += fmt.Sprintf("  - 用户权限: 未知 §r(§b%d§r)\n", f.userData.UserPermissionLevel)
+		content += fmt.Sprintf("  - 用户权限: 未知 §r(§b%d§r)\n", userData.UserPermissionLevel)
 	}
 
 	currentTime := time.Now()
-	if currentTime.Unix() < f.userData.UnbanUnixTime {
-		totalSeconds := int64(time.Unix(f.userData.UnbanUnixTime, 0).Sub(currentTime).Seconds())
+	if currentTime.Unix() < userData.UnbanUnixTime {
+		totalSeconds := int64(time.Unix(userData.UnbanUnixTime, 0).Sub(currentTime).Seconds())
 		days := totalSeconds / 86400
 		hours := totalSeconds/3600 - days*24
 		minutes := totalSeconds/60 - hours*60 - days*1440
 		content += fmt.Sprintf(
-			"  - 封禁状态: §r§c正被封禁 §f(还剩 §b%d §f天 §b%d §f时 §b%d §f秒)§r\n",
+			"  - 封禁状态: §r§c正被封禁 §r(还剩 §b%d §r天 §b%d §r时 §b%d §r秒)§r\n",
 			days, hours, minutes,
 		)
 	} else {
 		content += "  - 封禁状态: §r§a未封禁§r\n"
 	}
 
-	if len(f.userData.ProvidedPeAuthData) > 0 {
+	if len(userData.ProvidedPeAuthData) > 0 {
 		content += "  - PE Auth: §r§a正在使用§r\n"
 	} else {
 		content += "  - PE-Auth: §r§7未使用§r\n"
 	}
 
-	if f.userData.DisableGlobalOpertorVerify {
+	if userData.DisableGlobalOpertorVerify {
 		content += "  - 无权限进入任何租赁服: §r§a已授权§r\n"
 	} else {
 		content += "  - 无权限进入任何租赁服: §r§c未授权§r\n"
 	}
 
-	if f.userData.DisableGlobalOpertorVerify {
+	if userData.DisableGlobalOpertorVerify {
 		content += "  - 可访问任意租赁服: §r§a已授权§r\n"
 	} else {
 		content += "  - 可访问任意租赁服: §r§c未授权§r\n"
 	}
 
-	if f.userData.CanGetGameSavesKeyCipher {
+	if userData.CanGetGameSavesKeyCipher {
 		content += "  - 可取得任意租赁服的存档密钥: §r§a已授权§r\n"
 	} else {
 		content += "  - 可取得任意租赁服的存档密钥: §r§c未授权§r\n"
 	}
 
-	if f.userData.CanGetHelperToken {
+	if userData.CanGetHelperToken {
 		content += "  - 可取得辅助用户令牌: §r§a已授权§r\n"
 	} else {
 		content += "  - 可取得辅助用户令牌: §r§c未授权§r\n"

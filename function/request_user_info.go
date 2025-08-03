@@ -41,7 +41,7 @@ func (f *Function) RequestUserInfo() error {
 			resp, isUserCacel, err := f.interact.SendFormAndWaitResponse(form.MessageForm{
 				Title: "错误",
 				Content: fmt.Sprintf(
-					"请求赞颂者信息时失败 (%s)，可能是赞颂者令牌已经过期，要重新登录吗？",
+					"请求赞颂者信息时失败 (%s), 可能是赞颂者令牌已经过期, 要重新登录吗？",
 					userInfoResponse.ErrorInfo,
 				),
 				Button1: "重新登录",

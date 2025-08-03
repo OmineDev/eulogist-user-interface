@@ -30,13 +30,18 @@ func (f *Function) ChangeCurrentHelper() error {
 	var helperChangeRespose HelperChangeResponse
 
 	actionForm := form.ActionForm{
-		Title: "切换账户",
+		Title: "设置账户",
 	}
 	if len(f.userData.MultipleAuthServerAccounts) == 0 {
-		actionForm.Content = "您目前没有添加任何 MC 账号, 请回到点击叉号回到上一级菜单, 然后§r§e添加§r一个 MC 账号。"
+		actionForm.Content = "" +
+			"您目前没有添加任何 MC 账号, \n" +
+			"请回到点击 §r§e[x]§r 回到上一级菜单, \n" +
+			"然后§r§e添加§r一个 MC 账号。"
 	} else {
 		actionForm.Content = fmt.Sprintf(
-			"您目前总计已添加 %d 个账号，请从中选择一个作为当前使用的 MC 账号。",
+			""+
+				"您目前总计已添加 §r§b%d§r 个账号, \n"+
+				"请§r§e从中选择一个§r作为当前使用的 MC 账号。",
 			len(f.userData.MultipleAuthServerAccounts),
 		)
 	}
@@ -67,7 +72,7 @@ func (f *Function) ChangeCurrentHelper() error {
 			return fmt.Errorf("ChangeCurrentHelper: %v", err)
 		}
 		if !helperChangeRespose.Success {
-			err = f.ShowAuthServerError(
+			isUserCancel, err = f.ShowAuthServerError(
 				helperChangeRespose.NetEaseRequireVerify,
 				helperChangeRespose.VerifyURL,
 				helperChangeRespose.ErrorInfo,
@@ -75,7 +80,7 @@ func (f *Function) ChangeCurrentHelper() error {
 			if err != nil {
 				return fmt.Errorf("ChangeCurrentHelper: %v", err)
 			}
-			if helperChangeRespose.NetEaseRequireVerify {
+			if !isUserCancel && helperChangeRespose.NetEaseRequireVerify {
 				continue
 			} else {
 				return nil

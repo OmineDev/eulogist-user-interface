@@ -28,3 +28,18 @@ func NewFunction(interact *server.Interact) (result *Function, err error) {
 		config:   cfg,
 	}, nil
 }
+
+// Interact 返回表单交互实现
+func (f *Function) Interact() *server.Interact {
+	return f.interact
+}
+
+// EulogistConfig 返回赞颂者配置文件
+func (f *Function) EulogistConfig() *define.LocalConfig {
+	return f.config
+}
+
+// EulogistUserData 返回赞颂者用户数据
+func (f *Function) EulogistUserData() *define.EulogistUser {
+	return f.userData
+}

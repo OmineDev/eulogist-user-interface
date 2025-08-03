@@ -28,7 +28,7 @@ func (f *Function) RegisterOrLogin() (exitGame bool, err error) {
 	for {
 		minecraftForm := form.ActionForm{
 			Title:   "欢迎使用",
-			Content: "您还没有注册或登录赞颂者账号，请先注册或登录！",
+			Content: "您还没有注册或登录赞颂者账号, 请先注册或登录！",
 			Buttons: []form.ActionFormElement{
 				{
 					Text: "注册新的赞颂者账户",

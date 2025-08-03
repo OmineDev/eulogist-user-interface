@@ -20,8 +20,9 @@ type HelperAddRequest struct {
 	Token      string `json:"token,omitempty"`
 	ActionType uint8  `json:"action_type"`
 
-	Email       string `json:"email,omitempty"`
-	MD5Password string `json:"md5_password,omitempty"`
+	TransactionUUID string `json:"transaction_uuid,omitempty"`
+	Email           string `json:"email,omitempty"`
+	MD5Password     string `json:"md5_password,omitempty"`
 
 	AuthServerAddress string `json:"auth_server_address,omitempty"`
 	AuthServerToken   string `json:"auth_server_token,omitempty"`
@@ -40,44 +41,70 @@ type HelperAddResponse struct {
 
 // AddNewHelper 为客户端打开添加验证服务账户的表单
 func (f *Function) AddNewHelper() error {
-	actionForm := form.ActionForm{
-		Title:   "添加账户",
-		Content: "请从以下选项中选择一个。",
-		Buttons: []form.ActionFormElement{
-			{
-				Text: "使用内置验证服务 (§r§a推荐§r)",
-				Icon: form.ActionFormIconNone{},
+	for {
+		actionForm := form.ActionForm{
+			Title:   "添加账户",
+			Content: "请从以下选项中选择一个。",
+			Buttons: []form.ActionFormElement{
+				{
+					Text: "使用内置验证服务 (§r§2推荐§r)",
+					Icon: form.ActionFormIconNone{},
+				},
+				{
+					Text: "使用第三方验证服务",
+					Icon: form.ActionFormIconNone{},
+				},
+				{
+					Text: "返回上一级菜单",
+					Icon: form.ActionFormIconNone{},
+				},
 			},
-			{
-				Text: "使用第三方验证服务",
-				Icon: form.ActionFormIconNone{},
-			},
-			{
-				Text: "返回上一级菜单",
-				Icon: form.ActionFormIconNone{},
-			},
-		},
-	}
+		}
 
-	resp, isUserCancel, err := f.interact.SendFormAndWaitResponse(actionForm)
-	if err != nil {
-		return fmt.Errorf("AddNewHelper: %v", err)
-	}
-	if isUserCancel {
-		return nil
-	}
+		resp, isUserCancel, err := f.interact.SendFormAndWaitResponse(actionForm)
+		if err != nil {
+			return fmt.Errorf("AddNewHelper: %v", err)
+		}
+		if isUserCancel {
+			return nil
+		}
 
-	switch resp.(int32) {
-	case 0:
-		err = f.addStdHelper()
-	case 1:
-		err = f.addCustomHelper()
-	}
-	if err != nil {
-		return fmt.Errorf("AddNewHelper: %v", err)
-	}
+		switch resp.(int32) {
+		case 0:
+			err = f.addStdHelper()
+		case 1:
+			err = f.addCustomHelper()
+		case 2:
+			return nil
+		}
+		if err != nil {
+			return fmt.Errorf("AddNewHelper: %v", err)
+		}
 
-	return nil
+		if len(f.userData.MultipleAuthServerAccounts) > 0 {
+			_, ok := f.userData.CurrentAuthServerAccount.Value()
+			if !ok {
+				minecraftForm := form.MessageForm{
+					Title:   "设置当前使用的 MC 账户",
+					Content: "您似乎已经添加了一个 MC 账户, 但您还没有设置任何 MC 账户作为当前所使用的账户。您要现在立即前往设置吗?",
+					Button1: "前往",
+					Button2: "取消",
+				}
+				resp, isUserCancel, err := f.interact.SendFormAndWaitResponse(minecraftForm)
+				if err != nil {
+					return fmt.Errorf("addStdHelper: %v", err)
+				}
+				if isUserCancel {
+					continue
+				}
+				if resp.(bool) {
+					if err = f.ChangeCurrentHelper(); err != nil {
+						return fmt.Errorf("addStdHelper: %v", err)
+					}
+				}
+			}
+		}
+	}
 }
 
 // addCustomHelper ..
@@ -88,7 +115,7 @@ func (f *Function) addCustomHelper() error {
 		Title: "添加第三方验证服务账户",
 		Contents: []form.ModalFormElement{
 			form.ModalFormElementLabel{
-				Text: "请输入第三方验证服务账户的§r§e验证服务地址§r和§r§e验证服务令牌§r。",
+				Text: "请§r§e输入§r第三方验证服务账户的§r§e验证服务地址§r和§r§e验证服务令牌§r。",
 			},
 			form.ModalFormElementInput{
 				Text:        "验证服务地址",
@@ -154,44 +181,46 @@ func (f *Function) addCustomHelper() error {
 
 // addStdHelper ..
 func (f *Function) addStdHelper() error {
-	actionForm := form.ActionForm{
-		Title:   "添加账户",
-		Content: "我们目前只支持官服, 渠道服登录请返回上一级菜单, 并使用 §r§ePE Auth§r 凭据。",
-		Buttons: []form.ActionFormElement{
-			{
-				Text: "添加网易邮箱对应的 MC 账号",
-				Icon: form.ActionFormIconNone{},
+	for {
+		actionForm := form.ActionForm{
+			Title:   "添加账户",
+			Content: "我们目前只支持官服, 渠道服登录请返回上一级菜单, 并使用 §r§ePE Auth§r 凭据。",
+			Buttons: []form.ActionFormElement{
+				{
+					Text: "添加网易邮箱对应的 MC 账号",
+					Icon: form.ActionFormIconNone{},
+				},
+				{
+					Text: "添加手机号对应的 MC 账号",
+					Icon: form.ActionFormIconNone{},
+				},
+				{
+					Text: "返回上一级菜单",
+					Icon: form.ActionFormIconNone{},
+				},
 			},
-			{
-				Text: "添加手机号对应的 MC 账号",
-				Icon: form.ActionFormIconNone{},
-			},
-			{
-				Text: "返回上一级菜单",
-				Icon: form.ActionFormIconNone{},
-			},
-		},
-	}
+		}
 
-	resp, isUserCancel, err := f.interact.SendFormAndWaitResponse(actionForm)
-	if err != nil {
-		return fmt.Errorf("addStdHelper: %v", err)
-	}
-	if isUserCancel {
-		return nil
-	}
+		resp, isUserCancel, err := f.interact.SendFormAndWaitResponse(actionForm)
+		if err != nil {
+			return fmt.Errorf("addStdHelper: %v", err)
+		}
+		if isUserCancel {
+			return nil
+		}
 
-	switch resp.(int32) {
-	case 0:
-		err = f.addStdHelperByEmail()
-	case 1:
-		err = f.addStdHelperByMobile()
+		switch resp.(int32) {
+		case 0:
+			err = f.addStdHelperByEmail()
+		case 1:
+			err = f.addStdHelperByMobile()
+		case 2:
+			return nil
+		}
+		if err != nil {
+			return fmt.Errorf("addStdHelper: %v", err)
+		}
 	}
-	if err != nil {
-		return fmt.Errorf("addStdHelper: %v", err)
-	}
-
-	return nil
 }
 
 // addStdHelperByEmail ..
@@ -225,6 +254,7 @@ func (f *Function) addStdHelperByEmail() error {
 		return nil
 	}
 
+	tranUUID := uuid.NewString()
 	respList := resp.([]any)
 	emailAddress := respList[1].(string)
 	emailPassword := respList[2].(string)
@@ -234,17 +264,18 @@ func (f *Function) addStdHelperByEmail() error {
 		helperAddResponse, err = SendAndGetHttpResponse[HelperAddResponse](
 			fmt.Sprintf("%s/add_helper_normal", define.StdAuthServerAddress),
 			HelperAddRequest{
-				Token:       f.config.EulogistToken,
-				ActionType:  ActionTypeAddStdEmailHelper,
-				Email:       emailAddress,
-				MD5Password: hex.EncodeToString(emailPasswordMD5[:]),
+				Token:           f.config.EulogistToken,
+				ActionType:      ActionTypeAddStdEmailHelper,
+				TransactionUUID: tranUUID,
+				Email:           emailAddress,
+				MD5Password:     hex.EncodeToString(emailPasswordMD5[:]),
 			},
 		)
 		if err != nil {
 			return fmt.Errorf("addStdHelperByEmail: %v", err)
 		}
 		if !helperAddResponse.Success {
-			err = f.ShowAuthServerError(
+			isUserCancel, err = f.ShowAuthServerError(
 				helperAddResponse.NetEaseRequireVerify,
 				helperAddResponse.VerifyURL,
 				helperAddResponse.ErrorInfo,
@@ -252,7 +283,7 @@ func (f *Function) addStdHelperByEmail() error {
 			if err != nil {
 				return fmt.Errorf("addStdHelperByEmail: %v", err)
 			}
-			if helperAddResponse.NetEaseRequireVerify {
+			if !isUserCancel && helperAddResponse.NetEaseRequireVerify {
 				continue
 			} else {
 				return nil
@@ -274,7 +305,8 @@ func (f *Function) addStdHelperByEmail() error {
 
 const (
 	ActionTypeOpenNewTransaction uint8 = iota // Open new transaction
-	ActionTypeFinishVerify                    // User send/receive SMS to/from NetEase
+	ActionTypeReLogin                         // Need verify -> Pass verify -> Relogin
+	ActionTypeFinishLogin                     // Get SMS Code -> Finish login
 )
 
 const (
@@ -331,64 +363,80 @@ func (f *Function) addStdHelperByMobile() error {
 
 	respList := resp.([]any)
 	mobile := respList[1].(string)
-
 	tranUUID := uuid.NewString()
+	actionType := ActionTypeOpenNewTransaction
+
+	for {
+		smsHelperAddResp, err := SendAndGetHttpResponse[SMSHelperAddResponse](
+			fmt.Sprintf("%s/add_std_helper_sms", define.StdAuthServerAddress),
+			SMSHelperAddRequest{
+				Token:           f.config.EulogistToken,
+				TransactionUUID: tranUUID,
+				ActionType:      actionType,
+				Mobile:          mobile,
+			},
+		)
+		if err != nil {
+			return fmt.Errorf("addStdHelperByMobile: %v", err)
+		}
+
+		if smsHelperAddResp.ResponseType == ResponseTypeMeetError {
+			_, _, err := f.interact.SendFormAndWaitResponse(form.MessageForm{
+				Title:   "错误",
+				Content: smsHelperAddResp.ErrorInfo,
+				Button1: "确定",
+				Button2: "返回上一级菜单",
+			})
+			if err != nil {
+				return fmt.Errorf("addStdHelperByMobile: %v", err)
+			}
+			return nil
+		}
+
+		if smsHelperAddResp.ResponseType == ResponseTypeClientNeedSendSMS {
+			isUserCancel, err = f.ShowAuthServerError(true, smsHelperAddResp.VerifyURL, "")
+			if err != nil {
+				return fmt.Errorf("addStdHelperByMobile: %v", err)
+			}
+			if isUserCancel {
+				return nil
+			}
+			actionType = ActionTypeReLogin
+		}
+
+		if smsHelperAddResp.ResponseType == ResponseTypeClientNeedReceiveSMS {
+			resp, isUserCancel, err := f.interact.SendFormAndWaitResponse(form.ModalForm{
+				Title: "短信验证",
+				Contents: []form.ModalFormElement{
+					form.ModalFormElementLabel{
+						Text: "此操作需要§r§e短信验证§r, 请从手机上接收来自网易的短信, 并填写在下方。",
+					},
+					form.ModalFormElementInput{
+						Text:        "短信验证码",
+						Default:     "",
+						PlaceHolder: "6 位数验证码",
+					},
+				},
+			})
+
+			if err != nil {
+				return fmt.Errorf("addStdHelperByMobile: %v", err)
+			}
+			if isUserCancel {
+				return nil
+			}
+
+			verifyCode = resp.([]any)[1].(string)
+			break
+		}
+	}
+
 	smsHelperAddResp, err := SendAndGetHttpResponse[SMSHelperAddResponse](
 		fmt.Sprintf("%s/add_std_helper_sms", define.StdAuthServerAddress),
 		SMSHelperAddRequest{
 			Token:           f.config.EulogistToken,
 			TransactionUUID: tranUUID,
-			ActionType:      ActionTypeOpenNewTransaction,
-			Mobile:          mobile,
-		},
-	)
-	if err != nil {
-		return fmt.Errorf("addStdHelperByMobile: %v", err)
-	}
-
-	switch smsHelperAddResp.ResponseType {
-	case ResponseTypeClientNeedSendSMS:
-		resp, isUserCancel, err := f.interact.SendFormAndWaitResponse(form.MessageForm{
-			Title:   "短信验证",
-			Content: fmt.Sprintf("此操作需要§r§e短信验证§r, 内容为: \n  %s", smsHelperAddResp.ErrorInfo),
-			Button1: "我已完成验证",
-			Button2: "取消",
-		})
-		if err != nil {
-			return fmt.Errorf("addStdHelperByMobile: %v", err)
-		}
-		if isUserCancel || !resp.(bool) {
-			return nil
-		}
-	case ResponseTypeClientNeedReceiveSMS:
-		resp, isUserCancel, err := f.interact.SendFormAndWaitResponse(form.ModalForm{
-			Title: "短信验证",
-			Contents: []form.ModalFormElement{
-				form.ModalFormElementLabel{
-					Text: "此操作需要§r§e短信验证§r, 请从手机上接收来自网易的短信, 并填写在下方。",
-				},
-				form.ModalFormElementInput{
-					Text:        "短信验证码",
-					Default:     "",
-					PlaceHolder: "6 位数验证码",
-				},
-			},
-		})
-		if err != nil {
-			return fmt.Errorf("addStdHelperByMobile: %v", err)
-		}
-		if isUserCancel {
-			return nil
-		}
-		verifyCode = resp.([]any)[1].(string)
-	}
-
-	smsHelperAddResp, err = SendAndGetHttpResponse[SMSHelperAddResponse](
-		fmt.Sprintf("%s/add_std_helper_sms", define.StdAuthServerAddress),
-		SMSHelperAddRequest{
-			Token:           f.config.EulogistToken,
-			TransactionUUID: tranUUID,
-			ActionType:      ActionTypeFinishVerify,
+			ActionType:      ActionTypeFinishLogin,
 			SMSVerifyCode:   verifyCode,
 		},
 	)

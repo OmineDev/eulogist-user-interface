@@ -45,7 +45,7 @@ func (f *Function) ShowHelperDetails() error {
 			_, _, err := f.interact.SendFormAndWaitResponse(form.MessageForm{
 				Title: "账号详细信息",
 				Content: fmt.Sprintf(
-					"● 显示名称: %s\n●账户类型: 第三方验证服务账户\n● 验证服务地址: %s\n● 验证服务令牌: %s\n",
+					"● 显示名称: %s\n● 账户类型: 第三方验证服务账户\n● 验证服务地址: %s\n● 验证服务令牌: %s\n",
 					account.FormatInGame(),
 					account.AuthServerAddress(),
 					account.AuthServerSecret(),
@@ -70,7 +70,7 @@ func (f *Function) ShowHelperDetails() error {
 		}
 
 		if !helpInfoResponse.Success {
-			err = f.ShowAuthServerError(
+			isUserCancel, err := f.ShowAuthServerError(
 				helpInfoResponse.NetEaseRequireVerify,
 				helpInfoResponse.VerifyURL,
 				helpInfoResponse.ErrorInfo,
@@ -78,7 +78,7 @@ func (f *Function) ShowHelperDetails() error {
 			if err != nil {
 				return fmt.Errorf("ShowHelperDetails: %v", err)
 			}
-			if helpInfoResponse.NetEaseRequireVerify {
+			if !isUserCancel && helpInfoResponse.NetEaseRequireVerify {
 				continue
 			} else {
 				return nil
@@ -104,7 +104,7 @@ func (f *Function) ShowHelperDetails() error {
 		_, _, err = f.interact.SendFormAndWaitResponse(form.MessageForm{
 			Title: "账号详细信息",
 			Content: fmt.Sprintf(
-				"● 游戏昵称: %s\n●账户类型: 内置验证服务账户",
+				"● 游戏昵称: %s\n● 账户类型: 内置验证服务账户",
 				account.FormatInGame(),
 			),
 			Button1: "确定",

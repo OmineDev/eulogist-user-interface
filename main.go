@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/OmineDev/eulogist-user-interface/function"
+	"github.com/OmineDev/eulogist-user-interface/panel"
 	"github.com/OmineDev/eulogist-user-interface/server"
 )
 
@@ -26,5 +27,7 @@ func test() {
 
 	clientFunction.RegisterOrLogin()
 	clientFunction.RequestUserInfo()
-	clientFunction.MainPanel()
+
+	clientPanel := panel.NewPanel(clientFunction)
+	clientPanel.MainPanel()
 }
