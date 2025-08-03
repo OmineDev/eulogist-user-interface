@@ -5,6 +5,7 @@ import (
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
+	"github.com/OmineDev/eulogist-user-interface/utils"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 )
 
@@ -94,7 +95,7 @@ func (f *Function) ModifyCustomHelper() error {
 		authServerAddress := answerList[1].(string)
 		authServerToken := answerList[2].(string)
 
-		customHelperModifyResp, err := SendAndGetHttpResponse[CustomHelperModifyResponse](
+		customHelperModifyResp, err := utils.SendAndGetHttpResponse[CustomHelperModifyResponse](
 			fmt.Sprintf("%s/modify_custom_helper", define.StdAuthServerAddress),
 			CustomHelperModifyRequest{
 				Token:             f.config.EulogistToken,

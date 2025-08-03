@@ -5,6 +5,7 @@ import (
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
+	"github.com/OmineDev/eulogist-user-interface/utils"
 )
 
 // AllowListUpdateRequest ..
@@ -89,7 +90,7 @@ func (f *Function) rsmUpdatePermission(
 	disableOpertorVerify := respList[1].(bool)
 	canGetGameSavesKeyCipher := respList[3].(bool)
 
-	allowListUpdateResp, err := SendAndGetHttpResponse[AllowListUpdateResponse](
+	allowListUpdateResp, err := utils.SendAndGetHttpResponse[AllowListUpdateResponse](
 		fmt.Sprintf("%s/update_allow_list_config", define.StdAuthServerAddress),
 		AllowListUpdateRequest{
 			Token:                    f.config.EulogistToken,
@@ -152,7 +153,7 @@ type AllowListGetResponse struct {
 
 // RentalServerManageModify ..
 func (f *Function) RentalServerManageModify(rentalServerNumber string) error {
-	allowListGetResp, err := SendAndGetHttpResponse[AllowListGetResponse](
+	allowListGetResp, err := utils.SendAndGetHttpResponse[AllowListGetResponse](
 		fmt.Sprintf("%s/get_allow_list_config", define.StdAuthServerAddress),
 		AllowListGetRequest{
 			Token:              f.config.EulogistToken,
@@ -232,7 +233,7 @@ type AllowListDeleteResponse struct {
 // RentalServerManageDelete ..
 func (f *Function) RentalServerManageDelete(rentalServerNumber string) error {
 	for {
-		allowListGetResp, err := SendAndGetHttpResponse[AllowListGetResponse](
+		allowListGetResp, err := utils.SendAndGetHttpResponse[AllowListGetResponse](
 			fmt.Sprintf("%s/get_allow_list_config", define.StdAuthServerAddress),
 			AllowListGetRequest{
 				Token:              f.config.EulogistToken,
@@ -295,7 +296,7 @@ func (f *Function) RentalServerManageDelete(rentalServerNumber string) error {
 			continue
 		}
 
-		allowListDeleteResp, err := SendAndGetHttpResponse[AllowListDeleteResponse](
+		allowListDeleteResp, err := utils.SendAndGetHttpResponse[AllowListDeleteResponse](
 			fmt.Sprintf("%s/delete_allow_list_config", define.StdAuthServerAddress),
 			AllowListDeleteRequest{
 				Token:              f.config.EulogistToken,

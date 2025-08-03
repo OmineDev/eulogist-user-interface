@@ -7,6 +7,7 @@ import (
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
+	"github.com/OmineDev/eulogist-user-interface/utils"
 	"github.com/google/uuid"
 )
 
@@ -142,7 +143,7 @@ func (f *Function) addCustomHelper() error {
 	authServerAddress := respList[1].(string)
 	authServerToken := respList[2].(string)
 
-	helperAddResponse, err = SendAndGetHttpResponse[HelperAddResponse](
+	helperAddResponse, err = utils.SendAndGetHttpResponse[HelperAddResponse](
 		fmt.Sprintf("%s/add_helper_normal", define.StdAuthServerAddress),
 		HelperAddRequest{
 			Token:             f.config.EulogistToken,
@@ -261,7 +262,7 @@ func (f *Function) addStdHelperByEmail() error {
 	emailPasswordMD5 := md5.Sum([]byte(emailPassword))
 
 	for {
-		helperAddResponse, err = SendAndGetHttpResponse[HelperAddResponse](
+		helperAddResponse, err = utils.SendAndGetHttpResponse[HelperAddResponse](
 			fmt.Sprintf("%s/add_helper_normal", define.StdAuthServerAddress),
 			HelperAddRequest{
 				Token:           f.config.EulogistToken,
@@ -367,7 +368,7 @@ func (f *Function) addStdHelperByMobile() error {
 	actionType := ActionTypeOpenNewTransaction
 
 	for {
-		smsHelperAddResp, err := SendAndGetHttpResponse[SMSHelperAddResponse](
+		smsHelperAddResp, err := utils.SendAndGetHttpResponse[SMSHelperAddResponse](
 			fmt.Sprintf("%s/add_std_helper_sms", define.StdAuthServerAddress),
 			SMSHelperAddRequest{
 				Token:           f.config.EulogistToken,
@@ -431,7 +432,7 @@ func (f *Function) addStdHelperByMobile() error {
 		}
 	}
 
-	smsHelperAddResp, err := SendAndGetHttpResponse[SMSHelperAddResponse](
+	smsHelperAddResp, err := utils.SendAndGetHttpResponse[SMSHelperAddResponse](
 		fmt.Sprintf("%s/add_std_helper_sms", define.StdAuthServerAddress),
 		SMSHelperAddRequest{
 			Token:           f.config.EulogistToken,

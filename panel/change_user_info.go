@@ -6,7 +6,7 @@ import (
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
-	"github.com/OmineDev/eulogist-user-interface/function"
+	"github.com/OmineDev/eulogist-user-interface/utils"
 )
 
 // UserInfoChangeRequest ..
@@ -65,7 +65,7 @@ func (p *Panel) ChangeUserInfo() error {
 		newPasswordSum256Bytes = newPasswordSum256[:]
 	}
 
-	userInfoChangeResp, err := function.SendAndGetHttpResponse[UserInfoChangeResponse](
+	userInfoChangeResp, err := utils.SendAndGetHttpResponse[UserInfoChangeResponse](
 		fmt.Sprintf("%s/change_user_info", define.StdAuthServerAddress),
 		UserInfoChangeRequest{
 			Token:             p.f.EulogistConfig().EulogistToken,

@@ -13,3 +13,8 @@ func NewPanel(function *function.Function) *Panel {
 		f: function,
 	}
 }
+
+// Function 返回 [Panel] 底层中的 [*function.Function]
+func (p *Panel) Function() *function.Function {
+	return p.f
+}

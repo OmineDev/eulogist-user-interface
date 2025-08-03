@@ -7,6 +7,7 @@ import (
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
+	"github.com/OmineDev/eulogist-user-interface/utils"
 )
 
 // ChangeMainConfigRequest ..
@@ -24,7 +25,7 @@ type ChangeMainConfigResponse struct {
 
 // AdminChangeMainConfig ..
 func (f *Function) AdminChangeMainConfig(eulogistUserName string) error {
-	userInfoResponse, err := SendAndGetHttpResponse[UserInfoResponse](
+	userInfoResponse, err := utils.SendAndGetHttpResponse[UserInfoResponse](
 		fmt.Sprintf("%s/request_user_info", define.StdAuthServerAddress),
 		UserInfoRequest{
 			Token:            f.config.EulogistToken,
@@ -118,7 +119,7 @@ func (f *Function) AdminChangeMainConfig(eulogistUserName string) error {
 	canGetGameSavesKeyCipher := respList[7].(bool)
 	canGetHelperToken := respList[8].(bool)
 
-	changeMainConfigResp, err := SendAndGetHttpResponse[ChangeMainConfigResponse](
+	changeMainConfigResp, err := utils.SendAndGetHttpResponse[ChangeMainConfigResponse](
 		fmt.Sprintf("%s/admin_change_main_config", define.StdAuthServerAddress),
 		ChangeMainConfigRequest{
 			Token:            f.config.EulogistToken,

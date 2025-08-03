@@ -6,6 +6,7 @@ import (
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
+	"github.com/OmineDev/eulogist-user-interface/utils"
 )
 
 // UserSearchRequest ..
@@ -46,7 +47,7 @@ func (f *Function) ShowEulogistSearch() (eulogistUserName string, isUserCancel b
 	}
 	filterString := resp.([]any)[1].(string)
 
-	userSearchResponse, err := SendAndGetHttpResponse[UserSearchResponse](
+	userSearchResponse, err := utils.SendAndGetHttpResponse[UserSearchResponse](
 		fmt.Sprintf("%s/search_eulogist_user", define.StdAuthServerAddress),
 		UserSearchRequest{
 			Token:        f.config.EulogistToken,

@@ -1,5 +1,12 @@
 package define
 
+import (
+	"crypto/rsa"
+	"crypto/x509"
+	_ "embed"
+	"encoding/pem"
+)
+
 const EulogistConfigFileName = "eulogist_config.json"
 
 const (
@@ -25,3 +32,16 @@ const (
 	UserPermissionNone
 	UserPermissionDefault = UserPermissionNormal
 )
+
+//go:embed game_saves_encrypt.key
+var keyBytes []byte
+var GameSavesEncryptKey *rsa.PrivateKey
+
+func init() {
+	var err error
+	keyBlock, _ := pem.Decode(keyBytes)
+	GameSavesEncryptKey, err = x509.ParsePKCS1PrivateKey(keyBlock.Bytes)
+	if err != nil {
+		panic(err)
+	}
+}

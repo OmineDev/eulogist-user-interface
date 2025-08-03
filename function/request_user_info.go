@@ -5,6 +5,7 @@ import (
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
+	"github.com/OmineDev/eulogist-user-interface/utils"
 )
 
 const (
@@ -35,7 +36,7 @@ func (f *Function) RequestUserInfo(isReGet bool) error {
 			return nil
 		}
 
-		userInfoResponse, err := SendAndGetHttpResponse[UserInfoResponse](
+		userInfoResponse, err := utils.SendAndGetHttpResponse[UserInfoResponse](
 			fmt.Sprintf("%s/request_user_info", define.StdAuthServerAddress),
 			UserInfoRequest{
 				Token:       f.config.EulogistToken,

@@ -66,6 +66,7 @@ func (p *Panel) MainPanel() (exitGame bool, err error) {
 		case 2:
 			err = p.ChangeUserInfo()
 		case 3:
+			err = p.f.GetGameSavesKey()
 		case 4:
 			err = p.ServerOwnerPanel()
 		case 5:

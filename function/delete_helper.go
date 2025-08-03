@@ -5,6 +5,7 @@ import (
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
+	"github.com/OmineDev/eulogist-user-interface/utils"
 )
 
 // HelperAddRequest ..
@@ -66,7 +67,7 @@ func (f *Function) DeleteHelper() error {
 			continue
 		}
 
-		helperDeleteResponse, err := SendAndGetHttpResponse[HelperDeleteResponse](
+		helperDeleteResponse, err := utils.SendAndGetHttpResponse[HelperDeleteResponse](
 			fmt.Sprintf("%s/delete_helper", define.StdAuthServerAddress),
 			HelperDeleteRequest{
 				Token: f.config.EulogistToken,

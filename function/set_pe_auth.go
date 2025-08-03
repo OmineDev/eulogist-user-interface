@@ -5,6 +5,7 @@ import (
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
+	"github.com/OmineDev/eulogist-user-interface/utils"
 )
 
 // PEAuthSetRequest ..
@@ -47,7 +48,7 @@ func (f *Function) SetPEAuth() error {
 	}
 	peAuth := resp.([]any)[1].(string)
 
-	peAuthResponse, err := SendAndGetHttpResponse[PEAuthSetResponse](
+	peAuthResponse, err := utils.SendAndGetHttpResponse[PEAuthSetResponse](
 		fmt.Sprintf("%s/set_pe_auth", define.StdAuthServerAddress),
 		PEAuthSetRequest{
 			Token:  f.config.EulogistToken,

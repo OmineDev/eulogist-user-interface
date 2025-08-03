@@ -5,6 +5,7 @@ import (
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
+	"github.com/OmineDev/eulogist-user-interface/utils"
 )
 
 const (
@@ -61,7 +62,7 @@ func (f *Function) AdminChangeManager(eulogistUserName string) error {
 			return nil
 		}
 
-		managerChangeResp, err := SendAndGetHttpResponse[ManagerChangeResponse](
+		managerChangeResp, err := utils.SendAndGetHttpResponse[ManagerChangeResponse](
 			fmt.Sprintf("%s/admin_change_manager", define.StdAuthServerAddress),
 			ManagerChangeRequest{
 				Token:            f.config.EulogistToken,
@@ -128,7 +129,7 @@ func (f *Function) adminChangeManagerEdit(eulogistUserName string) error {
 		return nil
 	}
 
-	managerChangeResp, err := SendAndGetHttpResponse[ManagerChangeResponse](
+	managerChangeResp, err := utils.SendAndGetHttpResponse[ManagerChangeResponse](
 		fmt.Sprintf("%s/admin_change_manager", define.StdAuthServerAddress),
 		ManagerChangeRequest{
 			Token:            f.config.EulogistToken,
@@ -195,7 +196,7 @@ func (f *Function) adminChangeManagerRemove(
 			continue
 		}
 
-		managerChangeResp, err := SendAndGetHttpResponse[ManagerChangeResponse](
+		managerChangeResp, err := utils.SendAndGetHttpResponse[ManagerChangeResponse](
 			fmt.Sprintf("%s/admin_change_manager", define.StdAuthServerAddress),
 			ManagerChangeRequest{
 				Token:            f.config.EulogistToken,

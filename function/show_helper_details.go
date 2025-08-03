@@ -5,6 +5,7 @@ import (
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
+	"github.com/OmineDev/eulogist-user-interface/utils"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 )
 
@@ -59,7 +60,7 @@ func (f *Function) ShowHelperDetails() error {
 			return nil
 		}
 
-		helpInfoResponse, err := SendAndGetHttpResponse[HelperInfoResponse](
+		helpInfoResponse, err := utils.SendAndGetHttpResponse[HelperInfoResponse](
 			fmt.Sprintf("%s/get_std_helper_info", define.StdAuthServerAddress),
 			HelperInfoRequest{
 				Token: f.config.EulogistToken,

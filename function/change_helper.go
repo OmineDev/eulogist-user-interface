@@ -5,6 +5,7 @@ import (
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
+	"github.com/OmineDev/eulogist-user-interface/utils"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 )
 
@@ -61,7 +62,7 @@ func (f *Function) ChangeCurrentHelper() error {
 	}
 
 	for {
-		helperChangeRespose, err = SendAndGetHttpResponse[HelperChangeResponse](
+		helperChangeRespose, err = utils.SendAndGetHttpResponse[HelperChangeResponse](
 			fmt.Sprintf("%s/change_current_helper", define.StdAuthServerAddress),
 			HelperChangeRequest{
 				Token: f.config.EulogistToken,

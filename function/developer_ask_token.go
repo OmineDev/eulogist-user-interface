@@ -5,6 +5,7 @@ import (
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
+	"github.com/OmineDev/eulogist-user-interface/utils"
 )
 
 // DevTokenAsk ..
@@ -71,7 +72,7 @@ func (f *Function) DevAskToken() error {
 		return nil
 	}
 
-	devTokenResp, err := SendAndGetHttpResponse[DevTokenResp](
+	devTokenResp, err := utils.SendAndGetHttpResponse[DevTokenResp](
 		fmt.Sprintf("%s/dev_ask_token", define.StdAuthServerAddress),
 		DevTokenAsk{
 			Token:          f.config.EulogistToken,

@@ -6,6 +6,7 @@ import (
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
+	"github.com/OmineDev/eulogist-user-interface/utils"
 )
 
 // LoginRequest ..
@@ -106,7 +107,7 @@ func (f *Function) register() error {
 	userPassword := respList[2].(string)
 	userPasswordSum256 := sha256.Sum256([]byte(userPassword + define.UserPasswordSlat))
 
-	loginResponse, err := SendAndGetHttpResponse[LoginResponse](
+	loginResponse, err := utils.SendAndGetHttpResponse[LoginResponse](
 		fmt.Sprintf("%s/register_or_login", define.StdAuthServerAddress),
 		LoginRequest{
 			IsRegister:         true,
@@ -174,7 +175,7 @@ func (f *Function) login() error {
 	userPassword := respList[2].(string)
 	userPasswordSum256 := sha256.Sum256([]byte(userPassword + define.UserPasswordSlat))
 
-	loginResponse, err := SendAndGetHttpResponse[LoginResponse](
+	loginResponse, err := utils.SendAndGetHttpResponse[LoginResponse](
 		fmt.Sprintf("%s/register_or_login", define.StdAuthServerAddress),
 		LoginRequest{
 			IsRegister:         false,
