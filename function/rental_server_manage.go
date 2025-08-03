@@ -34,29 +34,26 @@ func (f *Function) rsmUpdatePermission(
 
 	if isInitProgress {
 		minecraftForm.Title = fmt.Sprintf(
-			"纳入并设置 %s 的权限 (租赁服 - %s)",
+			"纳入并设置 %s 的权限",
 			eulogistUserName,
-			rentalServerNumber,
 		)
 		minecraftForm.Contents = append(minecraftForm.Contents, form.ModalFormElementLabel{
 			Text: "" +
-				"您正在§r§e纳入§r一个的赞颂者用户到您的租赁服允许列表中。\n" +
-				"这意味着其如果使用§r§e内置验证服务账户§r, 其将被允许登录到您的租赁服。\n" +
-				"特别地, 使用第三方验证服务§r§e总是§r可以登录到您的租赁服, \n" +
-				"而无论您是否特别允许, 但下方设置依然有效。\n" +
-				"下面列出了您可以配置的权限设置。",
+				"您正在§r§e纳入§r一个的赞颂者用户到您的租赁服允许列表中。\n\n" +
+				"这意味着其如果使用§r§e内置验证服务账户§r, 其将被允许登录到您的租赁服。\n\n" +
+				"特别地, 使用第三方验证服务§r§e总是§r可以\n" + "登录到您的租赁服, 而无论您是否特别允许, \n" + "但下方设置依然有效。\n\n" +
+				"下面列出了您可以§r§e配置§r的权限设置。",
 		})
 	} else {
 		minecraftForm.Title = fmt.Sprintf(
-			"修改 %s 的权限 (租赁服 - %s)",
+			"修改 %s 的权限",
 			eulogistUserName,
-			rentalServerNumber,
 		)
 		minecraftForm.Contents = append(minecraftForm.Contents, form.ModalFormElementLabel{
 			Text: "" +
 				"您正在§r§e修改§r一个的赞颂者用户在您租赁服上的权限。\n" +
 				"应当注意的是, 这里指的§r§e不是§r操作员权限, 请注意区别。\n" +
-				"下面列出了您可以配置的权限设置。",
+				"下面列出了您可以§r§e配置§r的权限设置。",
 		})
 	}
 
@@ -331,16 +328,17 @@ func (f *Function) RentalServerManageDelete(rentalServerNumber string) error {
 func (f *Function) RentalServerManage(
 	afterSelectRentalServer func(rentalServerNumber string) error,
 ) (isUserCancel bool, err error) {
-	rentalServerNumber, isUserCancel, err := f.ListServerCanManage()
-	if err != nil {
-		return false, fmt.Errorf("RentalServerManage: %v", err)
+	for {
+		rentalServerNumber, isUserCancel, err := f.ListServerCanManage()
+		if err != nil {
+			return false, fmt.Errorf("RentalServerManage: %v", err)
+		}
+		if isUserCancel {
+			return true, nil
+		}
+		err = afterSelectRentalServer(rentalServerNumber)
+		if err != nil {
+			return false, fmt.Errorf("RentalServerManage: %v", err)
+		}
 	}
-	if isUserCancel {
-		return true, nil
-	}
-	err = afterSelectRentalServer(rentalServerNumber)
-	if err != nil {
-		return false, fmt.Errorf("RentalServerManage: %v", err)
-	}
-	return false, nil
 }

@@ -83,7 +83,7 @@ func (f *Function) register() error {
 			form.ModalFormElementInput{
 				Text:        "账户名",
 				Default:     "",
-				PlaceHolder: "赞颂者账户之名, 在 6 到 32 个字符之间",
+				PlaceHolder: "赞颂者账户之名, 在 6 到 16 个字符之间",
 			},
 			form.ModalFormElementInput{
 				Text:        "密码",

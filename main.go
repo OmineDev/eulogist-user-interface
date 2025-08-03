@@ -25,8 +25,8 @@ func test() {
 		panic(err)
 	}
 
-	clientFunction.RegisterOrLogin()
-	clientFunction.RequestUserInfo()
+	// clientFunction.RegisterOrLogin()
+	clientFunction.RequestUserInfo(false)
 
 	clientPanel := panel.NewPanel(clientFunction)
 	clientPanel.MainPanel()

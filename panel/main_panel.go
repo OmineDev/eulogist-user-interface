@@ -33,6 +33,10 @@ func (p *Panel) MainPanel() (exitGame bool, err error) {
 					Icon: form.ActionFormIconNone{},
 				},
 				{
+					Text: "下载您存档的解密密钥",
+					Icon: form.ActionFormIconNone{},
+				},
+				{
 					Text: "进入服主管理面板",
 					Icon: form.ActionFormIconNone{},
 				},
@@ -61,9 +65,11 @@ func (p *Panel) MainPanel() (exitGame bool, err error) {
 			err = p.AuthHelperPanel()
 		case 2:
 		case 3:
-			err = p.ServerOwnerPanel()
 		case 4:
+			err = p.ServerOwnerPanel()
 		case 5:
+			err = p.AdminPanel()
+		case 6:
 			return true, nil
 		}
 		if err != nil {

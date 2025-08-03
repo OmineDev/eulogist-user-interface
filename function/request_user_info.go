@@ -7,9 +7,16 @@ import (
 	"github.com/OmineDev/eulogist-user-interface/form"
 )
 
+const (
+	RequestTypeGetUserInfoNormal uint8 = iota
+	RequestTypeGetUserInfoAdmin
+)
+
 // UserInfoRequest ..
 type UserInfoRequest struct {
-	Token string `json:"token,omitempty"`
+	Token            string `json:"token,omitempty"`
+	RequestType      uint8  `json:"request_type"`
+	EulogistUserName string `json:"eulogist_user_name,omitempty"`
 }
 
 // UserInfoResponse ..
@@ -20,17 +27,19 @@ type UserInfoResponse struct {
 }
 
 // RequestUserInfo 请求用户的赞颂者账户数据。
-// 如果之前已经成功得到了数据，则不进行任何操作
-func (f *Function) RequestUserInfo() error {
+// 如果 isReGet 为假且之前已经成功得到了数据，
+// 则不进行任何操作
+func (f *Function) RequestUserInfo(isReGet bool) error {
 	for {
-		if f.userData != nil {
+		if !isReGet && f.userData != nil {
 			return nil
 		}
 
 		userInfoResponse, err := SendAndGetHttpResponse[UserInfoResponse](
 			fmt.Sprintf("%s/request_user_info", define.StdAuthServerAddress),
 			UserInfoRequest{
-				Token: f.config.EulogistToken,
+				Token:       f.config.EulogistToken,
+				RequestType: RequestTypeGetUserInfoNormal,
 			},
 		)
 		if err != nil {
