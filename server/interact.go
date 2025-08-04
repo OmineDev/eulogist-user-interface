@@ -69,11 +69,15 @@ func (i *Interact) sendFormAndWaitResponse(
 			select {
 			case pk = <-i.clientResp:
 			case <-omitRespCtx.Done():
-				close(omitRespCloseChecker)
+				if omitResp {
+					close(omitRespCloseChecker)
+				}
 				return nil, true, nil
 			case <-i.server.MinecraftConn().Context().Done():
-				omitRespCloser()
-				close(omitRespCloseChecker)
+				if omitResp {
+					omitRespCloser()
+					close(omitRespCloseChecker)
+				}
 				return nil, false, fmt.Errorf("SendFormAndWaitResponse: Minecraft connection has been closed")
 			}
 
