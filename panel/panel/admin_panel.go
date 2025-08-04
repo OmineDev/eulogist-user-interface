@@ -15,7 +15,7 @@ func (p *Panel) AdminPanel() error {
 	default:
 		_, _, err := p.f.Interact().SendFormAndWaitResponse(form.MessageForm{
 			Title:   "权限不足",
-			Content: "您§不是§r§a赞颂者管理人员§r, 因此您无法打开此选项卡。",
+			Content: "您不是§r§a赞颂者管理人员§r, 因此您无法打开此选项卡。",
 			Button1: "确定",
 			Button2: "返回上一级菜单",
 		})
