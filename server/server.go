@@ -1,13 +1,19 @@
 package server
 
 import (
+	"bytes"
+	_ "embed"
 	"fmt"
 	"sync"
 
 	"github.com/sandertv/gophertunnel/minecraft"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
+	"github.com/sandertv/gophertunnel/minecraft/resource"
 )
+
+//go:embed depends.mcpack
+var dependsResourcesPack []byte
 
 // Server 简单的实现了一个 MC 服务器，
 // 以用于运行一个赞颂者前置交互服务
@@ -36,11 +42,19 @@ func (s *Server) RunServer(address string) error {
 	if s.closed {
 		return fmt.Errorf("RunServer: Server has been closed")
 	}
+
+	pack, err := resource.Read(bytes.NewBuffer(dependsResourcesPack))
+	if err != nil {
+		return fmt.Errorf("RunServer: %v", err)
+	}
+
 	config := minecraft.ListenConfig{
 		AllowUnknownPackets: true,
 		StatusProvider: minecraft.NewStatusProvider(
 			"Eulogist", "Eulogist",
 		),
+		ResourcePacks:        []*resource.Pack{pack},
+		TexturePacksRequired: true,
 	}
 
 	listener, err := config.Listen("raknet", address)
