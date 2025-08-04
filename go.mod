@@ -3,7 +3,7 @@ module github.com/OmineDev/eulogist-user-interface
 go 1.24
 
 require (
-	github.com/ToolDelta-Basic/gophertunnel v1.50.1
+	github.com/ToolDelta-Basic/gophertunnel v1.50.2
 	github.com/deatil/go-cryptobin v1.1.1005
 )
 

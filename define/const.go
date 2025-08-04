@@ -14,8 +14,8 @@ const (
 )
 
 const (
-	StdAuthServerPhoenixAPI = "http://127.0.0.1:8080"
-	StdAuthServerAddress    = "http://127.0.0.1:8080/eulogist_api"
+	StdAuthServerPhoenixAPI = "https://yorha.eulogist-api.icu"
+	StdAuthServerAddress    = "https://yorha.eulogist-api.icu/eulogist_api"
 )
 
 const (
