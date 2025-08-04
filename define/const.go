@@ -7,16 +7,15 @@ import (
 	"encoding/pem"
 )
 
-const EulogistConfigFileName = "eulogist_config.json"
+const (
+	EulogistConfigFileName = "eulogist_config.json"
+	UserPasswordSlat       = "YoRHa"
+	DefaultPageSize        = 5
+)
 
 const (
 	StdAuthServerPhoenixAPI = "http://127.0.0.1:8080"
 	StdAuthServerAddress    = "http://127.0.0.1:8080/eulogist_api"
-)
-
-const (
-	UserPasswordSlat = "YoRHa"
-	DefaultPageSize  = 5
 )
 
 const (
