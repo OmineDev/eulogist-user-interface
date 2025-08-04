@@ -10,59 +10,80 @@ import (
 	"time"
 
 	"github.com/OmineDev/eulogist-user-interface/form"
-	"github.com/sandertv/gophertunnel/minecraft"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 )
 
 // Interact 是客户端和赞颂者假服务器的表单交互实现
 type Interact struct {
 	mu         *sync.Mutex
-	conn       *minecraft.Conn
+	server     *Server
 	formID     uint32
-	clientResp packet.ModalFormResponse
-	waiter     context.Context
-	downWaiter context.CancelFunc
+	clientResp chan packet.ModalFormResponse
 }
 
 // NewInteract 根据 server 创建并返回一个新的交互装置
-func NewInteract(conn *minecraft.Conn) *Interact {
+func NewInteract(server *Server) *Interact {
 	interact := &Interact{
-		mu:     new(sync.Mutex),
-		conn:   conn,
-		formID: 0,
+		mu:         new(sync.Mutex),
+		server:     server,
+		formID:     0,
+		clientResp: make(chan packet.ModalFormResponse),
 	}
 	go interact.handlePacket()
 	return interact
 }
 
-// sendFormAndWaitResponse ..
-func (i *Interact) sendFormAndWaitResponse(minecraftForm form.MinecraftForm) (resp any, isUserCancel bool, err error) {
-	for {
-		i.waiter, i.downWaiter = context.WithCancel(context.Background())
+// Server 返回底层的 [*Server]
+func (i *Interact) Server() *Server {
+	return i.server
+}
 
-		err = i.conn.WritePacket(&packet.ModalFormRequest{
+// setWaiterThenSendFormAndWaitResp ..
+func (i *Interact) setWaiterThenSendFormAndWaitResp(
+	minecraftForm form.MinecraftForm,
+) (resp any, isUserCancel bool, err error) {
+	return i.sendFormAndWaitResponse(minecraftForm, false, context.Background(), nil)
+}
+
+// sendFormAndWaitResponse ..
+func (i *Interact) sendFormAndWaitResponse(
+	minecraftForm form.MinecraftForm,
+	omitResp bool,
+	omitRespCtx context.Context,
+	omitRespCloser context.CancelFunc,
+) (resp any, isUserCancel bool, err error) {
+	for {
+		var pk packet.ModalFormResponse
+
+		i.formID++
+		err = i.server.MinecraftConn().WritePacket(&packet.ModalFormRequest{
 			FormID:   i.formID,
 			FormData: []byte(minecraftForm.PackToJSON()),
 		})
 		if err != nil {
 			return nil, false, fmt.Errorf("SendFormAndWaitResponse: %v", err)
 		}
-		i.formID++
 
 		select {
-		case <-i.waiter.Done():
-		case <-i.conn.Context().Done():
+		case pk = <-i.clientResp:
+			if omitResp {
+				omitRespCloser()
+				return nil, true, nil
+			}
+		case <-omitRespCtx.Done():
+			return nil, true, nil
+		case <-i.server.MinecraftConn().Context().Done():
 			return nil, false, fmt.Errorf("SendFormAndWaitResponse: Minecraft connection has been closed")
 		}
 
-		if i.clientResp.FormID != i.formID-1 {
+		if pk.FormID != i.formID {
 			return nil, false, fmt.Errorf(
 				"SendFormAndWaitResponse: Form ID not match (server = %d, client = %d)",
-				i.formID-1, i.clientResp.FormID,
+				i.formID, pk.FormID,
 			)
 		}
 
-		cancelReason, ok := i.clientResp.CancelReason.Value()
+		cancelReason, ok := pk.CancelReason.Value()
 		if ok {
 			if cancelReason == packet.ModalFormCancelReasonUserClosed {
 				return nil, true, nil
@@ -71,7 +92,7 @@ func (i *Interact) sendFormAndWaitResponse(minecraftForm form.MinecraftForm) (re
 			continue
 		}
 
-		resp, ok := i.clientResp.ResponseData.Value()
+		resp, ok := pk.ResponseData.Value()
 		if !ok {
 			return nil, false, fmt.Errorf("SendFormAndWaitResponse: Response data is not exist")
 		}
@@ -191,7 +212,7 @@ func (i *Interact) sendLargeActionFormAndWaitResponse(
 			Icon: form.ActionFormIconNone{},
 		})
 
-		anyResp, isUserCancel, err := i.sendFormAndWaitResponse(newForm)
+		anyResp, isUserCancel, err := i.setWaiterThenSendFormAndWaitResp(newForm)
 		if err != nil {
 			return 0, false, fmt.Errorf("SendLargeActionFormAndWaitResponse: %v", err)
 		}
@@ -211,19 +232,21 @@ func (i *Interact) sendLargeActionFormAndWaitResponse(
 		case nextPageIndex:
 			currentPage++
 		case jumpPageIndex:
-			anyResp, isUserCancel, err := i.sendFormAndWaitResponse(form.ModalForm{
-				Title: "跳转",
-				Contents: []form.ModalFormElement{
-					form.ModalFormElementLabel{
-						Text: "您将§r§e跳转§r到特定的页码",
-					},
-					form.ModalFormElementInput{
-						Text:        "跳转到",
-						Default:     "",
-						PlaceHolder: fmt.Sprintf("页数 (当前第 %d 页 | 最多 %d 页)", currentPage, maxPage),
+			anyResp, isUserCancel, err := i.setWaiterThenSendFormAndWaitResp(
+				form.ModalForm{
+					Title: "跳转",
+					Contents: []form.ModalFormElement{
+						form.ModalFormElementLabel{
+							Text: "您将§r§e跳转§r到特定的页码",
+						},
+						form.ModalFormElementInput{
+							Text:        "跳转到",
+							Default:     "",
+							PlaceHolder: fmt.Sprintf("页数 (当前第 %d 页 | 最多 %d 页)", currentPage, maxPage),
+						},
 					},
 				},
-			})
+			)
 			if err != nil {
 				return 0, false, fmt.Errorf("SendLargeActionFormAndWaitResponse: %v", err)
 			}
@@ -261,7 +284,7 @@ func (i *Interact) sendLargeActionFormAndWaitResponse(
 func (i *Interact) SendFormAndWaitResponse(minecraftForm form.MinecraftForm) (resp any, isUserCancel bool, err error) {
 	i.mu.Lock()
 	defer i.mu.Unlock()
-	return i.sendFormAndWaitResponse(minecraftForm)
+	return i.setWaiterThenSendFormAndWaitResp(minecraftForm)
 }
 
 // SendLargeActionFormAndWaitResponse 向客户端发送大型的 ActionForm，
@@ -276,11 +299,27 @@ func (i *Interact) SendLargeActionFormAndWaitResponse(
 	return i.sendLargeActionFormAndWaitResponse(actionForm, pageSize)
 }
 
+// SendFormOmitResponse 向客户端发送 minecraftForm 所指示的表单，并且其所对应的返回值。
+// 返回的 ctx 指示表单是否已经被客户端关闭。若没有关闭，该函数调用者有责任确保使用 formCloseFunc
+// 关闭已经打开的表单。如果表单未能正确关闭，则后续的任何表单操作将可能被阻塞
+func (i *Interact) SendFormOmitResponse(minecraftForm form.MinecraftForm) (ctx context.Context, formCloseFunc func()) {
+	i.mu.Lock()
+	ctx, cancelFunc := context.WithCancel(context.Background())
+	go func() {
+		i.sendFormAndWaitResponse(minecraftForm, true, ctx, cancelFunc)
+		i.mu.Unlock()
+	}()
+	return ctx, func() {
+		_ = i.server.MinecraftConn().WritePacket(&packet.ClientBoundCloseForm{})
+		cancelFunc()
+	}
+}
+
 // handlePacket 不断地读取数据包，
 // 并期望下一个抵达的数据包是客户端对表单的响应
 func (i *Interact) handlePacket() {
 	for {
-		pk, err := i.conn.ReadPacket()
+		pk, err := i.server.MinecraftConn().ReadPacket()
 		if err != nil {
 			return
 		}
@@ -290,7 +329,12 @@ func (i *Interact) handlePacket() {
 			continue
 		}
 
-		i.clientResp = *p
-		i.downWaiter()
+		if p.FormID == i.formID {
+			select {
+			case i.clientResp <- *p:
+			case <-i.Server().MinecraftConn().Context().Done():
+				return
+			}
+		}
 	}
 }

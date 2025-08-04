@@ -12,6 +12,7 @@ type Function struct {
 	interact *server.Interact
 	config   *define.LocalConfig
 	userData *define.EulogistUser
+	message  *MessageChannel
 }
 
 // NewFunction 根据 interact 创建并返回一个新的 Function
@@ -26,6 +27,7 @@ func NewFunction(interact *server.Interact) (result *Function, err error) {
 	return &Function{
 		interact: interact,
 		config:   cfg,
+		message:  NewMessageChannel(),
 	}, nil
 }
 
@@ -42,4 +44,9 @@ func (f *Function) EulogistConfig() *define.LocalConfig {
 // EulogistUserData 返回赞颂者用户数据
 func (f *Function) EulogistUserData() *define.EulogistUser {
 	return f.userData
+}
+
+// MessageChannel 返回 [*MessageChannel]
+func (f *Function) MessageChannel() *MessageChannel {
+	return f.message
 }

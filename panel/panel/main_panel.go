@@ -61,6 +61,7 @@ func (p *Panel) MainPanel() (exitGame bool, err error) {
 
 		switch resp.(int32) {
 		case 0:
+			exitGame, err = p.StartPlayPanel()
 		case 1:
 			err = p.AuthHelperPanel()
 		case 2:
@@ -76,6 +77,10 @@ func (p *Panel) MainPanel() (exitGame bool, err error) {
 		}
 		if err != nil {
 			return false, fmt.Errorf("MainPanel: %v", err)
+		}
+
+		if exitGame {
+			return true, nil
 		}
 	}
 }

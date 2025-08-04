@@ -14,7 +14,7 @@ func NewPanel(function *function.Function) *Panel {
 	}
 }
 
-// Function 返回 [Panel] 底层中的 [*function.Function]
-func (p *Panel) Function() *function.Function {
-	return p.f
+// Function 返回 [Panel] 底层中的 [*function.MessageChannel]
+func (p *Panel) MessageChannel() *function.MessageChannel {
+	return p.f.MessageChannel()
 }
