@@ -4,10 +4,11 @@ package function
 type MessageFromFronted struct {
 	RentalServerNumber   string
 	RentalServerPasscode string
-	GameSavesAESCipher   []byte
 	AuthServerAddress    string
 	AuthServerToken      string
 	ProvidedPeAuthData   string
+	EulogistUniqueID     string
+	GameSavesAESCipher   []byte
 }
 
 // MessageFromBacked ..

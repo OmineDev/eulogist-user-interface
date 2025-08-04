@@ -223,9 +223,10 @@ func (f *Function) startMinecraftPlay(config define.RentalServerConfig) (
 	frontedMsg := MessageFromFronted{
 		RentalServerNumber:   config.ServerNumber,
 		RentalServerPasscode: config.ServerPassCode,
-		GameSavesAESCipher:   aesCipher,
 		AuthServerAddress:    account.AuthServerAddress(),
 		ProvidedPeAuthData:   f.userData.ProvidedPeAuthData,
+		EulogistUniqueID:     f.userData.UserUniqueID,
+		GameSavesAESCipher:   aesCipher,
 	}
 	if account.IsStdAccount() {
 		frontedMsg.AuthServerToken = fmt.Sprintf("%s|%s", f.config.EulogistToken, account.AuthServerSecret())
