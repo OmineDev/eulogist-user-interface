@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/sandertv/gophertunnel/minecraft"
-	"github.com/sandertv/gophertunnel/minecraft/protocol"
-	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
-	"github.com/sandertv/gophertunnel/minecraft/resource"
+	"github.com/ToolDelta-Basic/gophertunnel/minecraft"
+	"github.com/ToolDelta-Basic/gophertunnel/minecraft/protocol"
+	"github.com/ToolDelta-Basic/gophertunnel/minecraft/protocol/packet"
+	"github.com/ToolDelta-Basic/gophertunnel/minecraft/resource"
 )
 
 //go:embed depends.mcpack
@@ -105,7 +105,6 @@ func (s *Server) WaitConnect() error {
 			PlayerGameMode:      1, // Creative
 			PersonaDisabled:     false,
 			CustomSkinsDisabled: false,
-			EmoteChatMuted:      true,
 			BaseGameVersion:     "*",
 			PlayerPosition:      [3]float32{0.5, 1.5, 0.5},
 			Pitch:               0,

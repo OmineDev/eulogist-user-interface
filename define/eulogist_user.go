@@ -3,7 +3,7 @@ package define
 import (
 	"bytes"
 
-	"github.com/sandertv/gophertunnel/minecraft/protocol"
+	"github.com/ToolDelta-Basic/gophertunnel/minecraft/protocol"
 )
 
 // EulogistUser ..
