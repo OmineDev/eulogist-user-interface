@@ -134,7 +134,7 @@ func (p *Panel) formatUserData() (content string) {
 		content += "  - 无权限进入任何租赁服: §r§c未授权§r\n"
 	}
 
-	if userData.DisableGlobalOpertorVerify {
+	if userData.CanAccessAnyRentalServer {
 		content += "  - 可访问任意租赁服: §r§a已授权§r\n"
 	} else {
 		content += "  - 可访问任意租赁服: §r§c未授权§r\n"
