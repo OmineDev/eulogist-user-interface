@@ -8,8 +8,8 @@ import (
 	"github.com/OmineDev/eulogist-user-interface/function"
 	"github.com/OmineDev/eulogist-user-interface/panel/panel"
 	"github.com/OmineDev/eulogist-user-interface/server"
+	"github.com/YingLunTown-DreamLand/gophertunnel/minecraft/protocol/packet"
 	"github.com/pterm/pterm"
-	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 )
 
 // PanelWrapper 是赞颂者前端的总包装者

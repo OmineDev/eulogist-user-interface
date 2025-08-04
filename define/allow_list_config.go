@@ -1,6 +1,6 @@
 package define
 
-import "github.com/sandertv/gophertunnel/minecraft/protocol"
+import "github.com/YingLunTown-DreamLand/gophertunnel/minecraft/protocol"
 
 // AllowListConfig ..
 type AllowListConfig struct {

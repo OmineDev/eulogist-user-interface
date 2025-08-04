@@ -6,7 +6,7 @@ import (
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
 	"github.com/OmineDev/eulogist-user-interface/utils"
-	"github.com/sandertv/gophertunnel/minecraft/protocol"
+	"github.com/YingLunTown-DreamLand/gophertunnel/minecraft/protocol"
 )
 
 // HelperInfoRequest ..
