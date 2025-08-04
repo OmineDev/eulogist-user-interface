@@ -225,6 +225,7 @@ func (f *Function) startMinecraftPlay(config define.RentalServerConfig) (
 		RentalServerPasscode: config.ServerPassCode,
 		GameSavesAESCipher:   aesCipher,
 		AuthServerAddress:    account.AuthServerAddress(),
+		ProvidedPeAuthData:   f.userData.ProvidedPeAuthData,
 	}
 	if account.IsStdAccount() {
 		frontedMsg.AuthServerToken = fmt.Sprintf("%s|%s", f.config.EulogistToken, account.AuthServerSecret())

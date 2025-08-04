@@ -7,6 +7,7 @@ type MessageFromFronted struct {
 	GameSavesAESCipher   []byte
 	AuthServerAddress    string
 	AuthServerToken      string
+	ProvidedPeAuthData   string
 }
 
 // MessageFromBacked ..
