@@ -15,8 +15,8 @@ github.com/MarvinJWendt/testza v0.3.0/go.mod h1:eFcL4I0idjtIx8P9C6KkAuLgATNKpX4/
 github.com/MarvinJWendt/testza v0.4.2/go.mod h1:mSdhXiKH8sg/gQehJ63bINcCKp7RtYewEjXsvsVUPbE=
 github.com/MarvinJWendt/testza v0.5.2 h1:53KDo64C1z/h/d/stCYCPY69bt/OSwjq5KpFNwi+zB4=
 github.com/MarvinJWendt/testza v0.5.2/go.mod h1:xu53QFE5sCdjtMCKk8YMQ2MnymimEctc4n3EjyIYvEY=
-github.com/ToolDelta-Basic/gophertunnel v1.50.0 h1:HnZlRTKjgrsBdY8foEGq0Pi1CVoaMSYz4TxNe7rj3FA=
-github.com/ToolDelta-Basic/gophertunnel v1.50.0/go.mod h1:m/s+nNdHeKAzowW7VvgEMPKknj1chJi0xLv8GkgLQ8w=
+github.com/ToolDelta-Basic/gophertunnel v1.50.1 h1:awPdOzeO6yyK+HLHqVHylETYupUYoZ+4qqjcwUkE+Kc=
+github.com/ToolDelta-Basic/gophertunnel v1.50.1/go.mod h1:m/s+nNdHeKAzowW7VvgEMPKknj1chJi0xLv8GkgLQ8w=
 github.com/atomicgo/cursor v0.0.1/go.mod h1:cBON2QmmrysudxNBFthvMtN32r3jxVRIvzkUiF/RuIk=
 github.com/containerd/console v1.0.3/go.mod h1:7LqA/THxQ86k76b8c/EMSiaJ3h1eZkMkXar0TQ1gf3U=
 github.com/containerd/console v1.0.5 h1:R0ymNeydRqH2DmakFNdmjR2k0t7UPuiOV/N/27/qqsc=
