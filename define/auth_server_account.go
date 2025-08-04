@@ -78,7 +78,7 @@ func (s *StdAuthServerAccount) FormatInGame() string {
 }
 
 func (s *StdAuthServerAccount) AuthServerAddress() string {
-	return StdAuthServerAddress
+	return StdAuthServerPhoenixAPI
 }
 
 func (s *StdAuthServerAccount) AuthServerSecret() string {

@@ -21,9 +21,10 @@ type GameSavesKeyRequest struct {
 
 // GameSavesKeyResponse ..
 type GameSavesKeyResponse struct {
-	ErrorInfo string `json:"error_info"`
-	Success   bool   `json:"success"`
-	AESCipher []byte `json:"encrypted_aes_cipher"`
+	ErrorInfo            string `json:"error_info"`
+	Success              bool   `json:"success"`
+	AESCipher            []byte `json:"encrypted_aes_cipher"`
+	DisableOpertorVerify bool   `json:"disable_operator_verify"`
 }
 
 // GetGameSavesKey ..
@@ -104,7 +105,11 @@ func (f *Function) GetGameSavesKey() error {
 }
 
 // BeforePlayPrepare ..
-func (f *Function) BeforePlayPrepare(rentalServerNumber string) (aesCipher []byte, err error) {
+func (f *Function) BeforePlayPrepare(rentalServerNumber string) (
+	aesCipher []byte,
+	disableOpertorVerify bool,
+	err error,
+) {
 	var gameSavesKeyResp GameSavesKeyResponse
 	request := GameSavesKeyRequest{
 		Token:              f.config.EulogistToken,
@@ -113,12 +118,12 @@ func (f *Function) BeforePlayPrepare(rentalServerNumber string) (aesCipher []byt
 
 	jsonBytes, err := json.Marshal(request)
 	if err != nil {
-		return nil, fmt.Errorf("BeforePlayPrepare: %v", err)
+		return nil, disableOpertorVerify, fmt.Errorf("BeforePlayPrepare: %v", err)
 	}
 
 	encrypted, err := utils.EncryptPKCS1v15(&define.GameSavesEncryptKey.PublicKey, jsonBytes)
 	if err != nil {
-		return nil, fmt.Errorf("BeforePlayPrepare: %v", err)
+		return nil, false, fmt.Errorf("BeforePlayPrepare: %v", err)
 	}
 
 	buf := bytes.NewBuffer(encrypted)
@@ -134,12 +139,12 @@ func (f *Function) BeforePlayPrepare(rentalServerNumber string) (aesCipher []byt
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("BeforePlayPrepare: Status code (%d) is not 200", resp.StatusCode)
+		return nil, false, fmt.Errorf("BeforePlayPrepare: Status code (%d) is not 200", resp.StatusCode)
 	}
 
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("BeforePlayPrepare: %v", err)
+		return nil, false, fmt.Errorf("BeforePlayPrepare: %v", err)
 	}
 
 	decrypted, err := utils.DecryptPKCS1v15(define.GameSavesEncryptKey, bodyBytes)
@@ -149,11 +154,11 @@ func (f *Function) BeforePlayPrepare(rentalServerNumber string) (aesCipher []byt
 
 	err = json.Unmarshal(bodyBytes, &gameSavesKeyResp)
 	if err != nil {
-		return nil, fmt.Errorf("BeforePlayPrepare: %v", err)
+		return nil, false, fmt.Errorf("BeforePlayPrepare: %v", err)
 	}
 
 	if !gameSavesKeyResp.Success {
-		return nil, fmt.Errorf("BeforePlayPrepare: Failed to get game saves key due to %v", gameSavesKeyResp.ErrorInfo)
+		return nil, false, fmt.Errorf("BeforePlayPrepare: Failed to get game saves key due to %v", gameSavesKeyResp.ErrorInfo)
 	}
-	return gameSavesKeyResp.AESCipher, nil
+	return gameSavesKeyResp.AESCipher, gameSavesKeyResp.DisableOpertorVerify, nil
 }

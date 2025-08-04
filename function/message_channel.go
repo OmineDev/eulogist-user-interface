@@ -9,6 +9,7 @@ type MessageFromFronted struct {
 	ProvidedPeAuthData   string
 	EulogistUniqueID     string
 	GameSavesAESCipher   []byte
+	DisableOpertorVerify bool
 }
 
 // MessageFromBacked ..

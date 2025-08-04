@@ -210,7 +210,7 @@ func (f *Function) startMinecraftPlay(config define.RentalServerConfig) (
 		}
 	}
 
-	aesCipher, err := f.BeforePlayPrepare(config.ServerNumber)
+	aesCipher, disableOpertorVerify, err := f.BeforePlayPrepare(config.ServerNumber)
 	if err != nil {
 		return nil, fmt.Errorf("startMinecraftPlay: %v", err)
 	}
@@ -227,6 +227,7 @@ func (f *Function) startMinecraftPlay(config define.RentalServerConfig) (
 		ProvidedPeAuthData:   f.userData.ProvidedPeAuthData,
 		EulogistUniqueID:     f.userData.UserUniqueID,
 		GameSavesAESCipher:   aesCipher,
+		DisableOpertorVerify: disableOpertorVerify,
 	}
 	if account.IsStdAccount() {
 		frontedMsg.AuthServerToken = fmt.Sprintf("%s|%s", f.config.EulogistToken, account.AuthServerSecret())
@@ -249,6 +250,7 @@ func (f *Function) waitbackedMessage(rentalServerNumber string) (
 	err error,
 ) {
 	backedMsgIncoming := make(chan struct{})
+	waitClose := make(chan struct{})
 
 	go func() {
 		for {
@@ -265,6 +267,7 @@ func (f *Function) waitbackedMessage(rentalServerNumber string) (
 			case <-ctx.Done():
 			case <-backedMsgIncoming:
 				closer()
+				close(waitClose)
 				return
 			}
 		}
@@ -273,6 +276,7 @@ func (f *Function) waitbackedMessage(rentalServerNumber string) (
 	msg := <-f.message.BackedMessageChannel()
 	backedMessage = &msg
 	close(backedMsgIncoming)
+	<-waitClose
 
 	if backedMessage.CanTerminate {
 		_ = f.interact.Server().MinecraftConn().WritePacket(&packet.Transfer{

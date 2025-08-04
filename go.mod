@@ -2,7 +2,10 @@ module github.com/OmineDev/eulogist-user-interface
 
 go 1.24
 
-require github.com/sandertv/gophertunnel v1.48.1
+require (
+	github.com/deatil/go-cryptobin v1.1.1005
+	github.com/sandertv/gophertunnel v1.48.1
+)
 
 require (
 	atomicgo.dev/cursor v0.2.0 // indirect
@@ -14,21 +17,22 @@ require (
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
+	golang.org/x/crypto v0.39.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/term v0.32.0 // indirect
 )
 
 require (
-	github.com/go-gl/mathgl v1.1.0 // indirect
+	github.com/df-mc/goleveldb v1.1.9
+	github.com/go-gl/mathgl v1.2.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.0 // indirect
-	github.com/golang/snappy v0.0.4 // indirect
+	github.com/golang/snappy v1.0.0 // indirect
 	github.com/google/uuid v1.6.0
-	github.com/klauspost/compress v1.17.11 // indirect
+	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/muhammadmuzzammil1998/jsonc v1.0.0 // indirect
 	github.com/pterm/pterm v0.12.81
 	github.com/sandertv/go-raknet v1.14.3-0.20250305181847-6af3e95113d6 // indirect
-	golang.org/x/image v0.21.0 // indirect
-	golang.org/x/net v0.35.0 // indirect
+	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/oauth2 v0.23.0 // indirect
 	golang.org/x/text v0.26.0 // indirect
 )

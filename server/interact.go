@@ -42,7 +42,7 @@ func (i *Interact) Server() *Server {
 func (i *Interact) setWaiterThenSendFormAndWaitResp(
 	minecraftForm form.MinecraftForm,
 ) (resp any, isUserCancel bool, err error) {
-	return i.sendFormAndWaitResponse(minecraftForm, false, context.Background(), nil)
+	return i.sendFormAndWaitResponse(minecraftForm, false, context.Background(), nil, nil)
 }
 
 // sendFormAndWaitResponse ..
@@ -51,6 +51,7 @@ func (i *Interact) sendFormAndWaitResponse(
 	omitResp bool,
 	omitRespCtx context.Context,
 	omitRespCloser context.CancelFunc,
+	omitRespCloseChecker chan struct{},
 ) (resp any, isUserCancel bool, err error) {
 	for {
 		var pk packet.ModalFormResponse
@@ -64,23 +65,28 @@ func (i *Interact) sendFormAndWaitResponse(
 			return nil, false, fmt.Errorf("SendFormAndWaitResponse: %v", err)
 		}
 
-		select {
-		case pk = <-i.clientResp:
+		for {
+			select {
+			case pk = <-i.clientResp:
+			case <-omitRespCtx.Done():
+				close(omitRespCloseChecker)
+				return nil, true, nil
+			case <-i.server.MinecraftConn().Context().Done():
+				omitRespCloser()
+				close(omitRespCloseChecker)
+				return nil, false, fmt.Errorf("SendFormAndWaitResponse: Minecraft connection has been closed")
+			}
+
+			if pk.FormID < i.formID {
+				continue
+			}
 			if omitResp {
 				omitRespCloser()
+				close(omitRespCloseChecker)
 				return nil, true, nil
 			}
-		case <-omitRespCtx.Done():
-			return nil, true, nil
-		case <-i.server.MinecraftConn().Context().Done():
-			return nil, false, fmt.Errorf("SendFormAndWaitResponse: Minecraft connection has been closed")
-		}
 
-		if pk.FormID != i.formID {
-			return nil, false, fmt.Errorf(
-				"SendFormAndWaitResponse: Form ID not match (server = %d, client = %d)",
-				i.formID, pk.FormID,
-			)
+			break
 		}
 
 		cancelReason, ok := pk.CancelReason.Value()
@@ -299,20 +305,37 @@ func (i *Interact) SendLargeActionFormAndWaitResponse(
 	return i.sendLargeActionFormAndWaitResponse(actionForm, pageSize)
 }
 
-// SendFormOmitResponse 向客户端发送 minecraftForm 所指示的表单，并且其所对应的返回值。
-// 返回的 ctx 指示表单是否已经被客户端关闭。若没有关闭，该函数调用者有责任确保使用 formCloseFunc
-// 关闭已经打开的表单。如果表单未能正确关闭，则后续的任何表单操作将可能被阻塞
-func (i *Interact) SendFormOmitResponse(minecraftForm form.MinecraftForm) (ctx context.Context, formCloseFunc func()) {
+// SendFormOmitResponse 向客户端发送 minecraftForm 所指示的表单，
+// 并且其所对应的返回值。返回的 ctx 指示表单是否已经被客户端关闭。
+//
+// 若没有关闭，该函数调用者有责任确保使用 formCloseFunc 关闭已经
+// 打开的表单。
+//
+// 如果表单未能正确关闭，则后续的任何表单操作将可能被阻塞
+func (i *Interact) SendFormOmitResponse(minecraftForm form.MinecraftForm) (
+	ctx context.Context,
+	formCloseFunc func(),
+) {
 	i.mu.Lock()
+
 	ctx, cancelFunc := context.WithCancel(context.Background())
+	closeChecker := make(chan struct{})
+
 	go func() {
-		i.sendFormAndWaitResponse(minecraftForm, true, ctx, cancelFunc)
+		i.sendFormAndWaitResponse(minecraftForm, true, ctx, cancelFunc, closeChecker)
 		i.mu.Unlock()
 	}()
-	return ctx, func() {
-		_ = i.server.MinecraftConn().WritePacket(&packet.ClientBoundCloseForm{})
+
+	formCloseFunc = func() {
 		cancelFunc()
+		<-closeChecker
+		time.Sleep(time.Second)
+		for range 3 {
+			time.Sleep(time.Second / 20 * 5)
+			_ = i.server.MinecraftConn().WritePacket(&packet.ClientBoundCloseForm{})
+		}
 	}
+	return
 }
 
 // handlePacket 不断地读取数据包，
@@ -329,12 +352,10 @@ func (i *Interact) handlePacket() {
 			continue
 		}
 
-		if p.FormID == i.formID {
-			select {
-			case i.clientResp <- *p:
-			case <-i.Server().MinecraftConn().Context().Done():
-				return
-			}
+		select {
+		case i.clientResp <- *p:
+		case <-i.Server().MinecraftConn().Context().Done():
+			return
 		}
 	}
 }

@@ -13,7 +13,7 @@ type AllowListUpdateRequest struct {
 	Token                    string `json:"token,omitempty"`
 	RentalServerNumber       string `json:"rental_server_number,omitempty"`
 	EulogistUserName         string `json:"eulogist_user_name,omitempty"`
-	DisableOpertorVerify     bool   `json:"disbale_operator_verify"`
+	DisableOpertorVerify     bool   `json:"disable_operator_verify"`
 	CanGetGameSavesKeyCipher bool   `json:"can_get_game_saves_key_cipher"`
 }
 
@@ -147,7 +147,7 @@ type AllowListGetResponse struct {
 	ErrorInfo                string   `json:"error_info"`
 	Success                  bool     `json:"success"`
 	UserNames                []string `json:"user_names"`
-	DisableOpertorVerify     []bool   `json:"disbale_operator_verify"`
+	DisableOpertorVerify     []bool   `json:"disable_operator_verify"`
 	CanGetGameSavesKeyCipher []bool   `json:"can_get_game_saves_key_cipher"`
 }
 
