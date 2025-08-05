@@ -8,14 +8,60 @@ import (
 	"github.com/OmineDev/eulogist-user-interface/form"
 )
 
-// MainPanel 向用户展示赞颂者的控制面板。
-// 在调用它前必须先调用 RequestUserInfo 获取用户信息
+// MainPanel 向用户展示赞颂者的控制面板
 func (p *Panel) MainPanel() (exitGame bool, err error) {
+	conn := p.f.Interact().Server().MinecraftConn()
+
 	for {
-		if p.f.EulogistUserData() == nil {
-			return false, fmt.Errorf("MainPanel: Needs call RequestUserInfo first")
+		// Register or login
+		for {
+			if len(p.f.EulogistConfig().EulogistToken) != 0 {
+				break
+			}
+
+			exitGame, err := p.f.RegisterOrLogin()
+			select {
+			case <-conn.Context().Done():
+				return false, nil
+			default:
+			}
+
+			if err != nil {
+				_, _, _ = p.f.Interact().SendFormAndWaitResponse(form.MessageForm{
+					Title:   "注册或登录失败",
+					Content: fmt.Sprintf("%v", err),
+					Button1: "确定",
+					Button2: "继续",
+				})
+				continue
+			}
+
+			if exitGame {
+				return true, nil
+			}
 		}
 
+		// Request user info
+		for {
+			if err = p.f.RequestUserInfo(false); err == nil {
+				break
+			}
+
+			select {
+			case <-conn.Context().Done():
+				return false, nil
+			default:
+			}
+
+			_, _, _ = p.f.Interact().SendFormAndWaitResponse(form.MessageForm{
+				Title:   "请求赞颂者账户信息失败",
+				Content: fmt.Sprintf("%v", err),
+				Button1: "确定",
+				Button2: "继续",
+			})
+		}
+
+		// Show main panel
 		minecraftForm := form.ActionForm{
 			Title:   "欢迎您",
 			Content: fmt.Sprintf("%s请选择您要进行的操作。", p.formatUserData()),
@@ -42,6 +88,10 @@ func (p *Panel) MainPanel() (exitGame bool, err error) {
 				},
 				{
 					Text: "进入赞颂者管理面板",
+					Icon: form.ActionFormIconNone{},
+				},
+				{
+					Text: "退出登录",
 					Icon: form.ActionFormIconNone{},
 				},
 				{
@@ -73,7 +123,9 @@ func (p *Panel) MainPanel() (exitGame bool, err error) {
 		case 5:
 			err = p.AdminPanel()
 		case 6:
-			return true, nil
+			err = p.f.Logout()
+		case 7:
+			exitGame = true
 		}
 		if err != nil {
 			return false, fmt.Errorf("MainPanel: %v", err)

@@ -110,7 +110,7 @@ func (f *Function) adminChangeManagerEdit(eulogistUserName string) error {
 			form.ModalFormElementLabel{
 				Text: "" +
 					"您将授权该用户§r§e管理§r一个新的租赁服, \n" +
-					"这意味着他可以§控制哪些人可以使用§r§e内置验证服务§r进入他的服务器。\n" +
+					"这意味着他可以控制哪些人可以使用§r§e内置验证服务§r进入他的服务器。\n" +
 					"除此外, 该用户还可以调整特定于该租赁服的§r§e无权限进服§r和§r§e存档密钥§r设置。",
 			},
 			form.ModalFormElementInput{

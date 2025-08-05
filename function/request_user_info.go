@@ -61,8 +61,7 @@ func (f *Function) RequestUserInfo(isReGet bool) error {
 				return fmt.Errorf("RequestUserInfo: %v", err)
 			}
 			if !isUserCacel && resp.(bool) {
-				err = f.login()
-				if err != nil {
+				if err = f.login(); err != nil {
 					return fmt.Errorf("RequestUserInfo: %v", err)
 				}
 			}

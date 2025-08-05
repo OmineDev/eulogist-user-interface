@@ -48,7 +48,7 @@ func (f *Function) DevAskToken() error {
 		actionForm.Content = fmt.Sprintf(
 			""+
 				"您目前总计已有 §r§b%d§r 个账号, \n"+
-				"请从中选择一个, 然后便可§r§e取得§r§它的 Token。",
+				"请从中选择一个, 然后便可§r§e取得§r它的 Token。",
 			len(f.userData.MultipleAuthServerAccounts),
 		)
 	}

@@ -72,59 +72,6 @@ func MainEntry(realAddress string, showAddress string, bedrockVersion string) (
 		// Cancel context
 		defer cancelFunc()
 
-		// Register or login
-		for {
-			if len(wrapper.function.EulogistConfig().EulogistToken) != 0 {
-				break
-			}
-
-			exitGame, err := wrapper.function.RegisterOrLogin()
-			select {
-			case <-wrapper.server.MinecraftConn().Context().Done():
-				return
-			default:
-			}
-
-			if err != nil {
-				_, _, _ = wrapper.interact.SendFormAndWaitResponse(form.MessageForm{
-					Title:   "注册或登录失败",
-					Content: fmt.Sprintf("%v", err),
-					Button1: "确定",
-					Button2: "继续",
-				})
-				continue
-			}
-
-			if exitGame {
-				_ = wrapper.server.MinecraftConn().WritePacket(&packet.Disconnect{
-					Message: "感谢您的使用, 期待下次与您相会！",
-				})
-				_ = wrapper.server.CloseServer()
-				return
-			}
-		}
-
-		// Request user info
-		for {
-			err = wrapper.function.RequestUserInfo(false)
-			if err == nil {
-				break
-			}
-
-			select {
-			case <-wrapper.server.MinecraftConn().Context().Done():
-				return
-			default:
-			}
-
-			_, _, _ = wrapper.interact.SendFormAndWaitResponse(form.MessageForm{
-				Title:   "请求赞颂者账户信息失败",
-				Content: fmt.Sprintf("%v", err),
-				Button1: "确定",
-				Button2: "继续",
-			})
-		}
-
 		// Show main panel
 		for {
 			exitGame, err := wrapper.panel.MainPanel()
