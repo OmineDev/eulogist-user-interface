@@ -106,6 +106,7 @@ func (f *Function) GetGameSavesKey() error {
 
 // BeforePlayPrepare ..
 func (f *Function) BeforePlayPrepare(rentalServerNumber string) (
+	providedPeAuthData string,
 	aesCipher []byte,
 	disableOpertorVerify bool,
 	err error,
@@ -118,12 +119,12 @@ func (f *Function) BeforePlayPrepare(rentalServerNumber string) (
 
 	jsonBytes, err := json.Marshal(request)
 	if err != nil {
-		return nil, disableOpertorVerify, fmt.Errorf("BeforePlayPrepare: %v", err)
+		return "", nil, disableOpertorVerify, fmt.Errorf("BeforePlayPrepare: %v", err)
 	}
 
 	encrypted, err := utils.EncryptPKCS1v15(&define.GameSavesEncryptKey.PublicKey, jsonBytes)
 	if err != nil {
-		return nil, false, fmt.Errorf("BeforePlayPrepare: %v", err)
+		return "", nil, false, fmt.Errorf("BeforePlayPrepare: %v", err)
 	}
 
 	buf := bytes.NewBuffer(encrypted)
@@ -139,12 +140,12 @@ func (f *Function) BeforePlayPrepare(rentalServerNumber string) (
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, false, fmt.Errorf("BeforePlayPrepare: Status code (%d) is not 200", resp.StatusCode)
+		return "", nil, false, fmt.Errorf("BeforePlayPrepare: Status code (%d) is not 200", resp.StatusCode)
 	}
 
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, false, fmt.Errorf("BeforePlayPrepare: %v", err)
+		return "", nil, false, fmt.Errorf("BeforePlayPrepare: %v", err)
 	}
 
 	decrypted, err := utils.DecryptPKCS1v15(define.GameSavesEncryptKey, bodyBytes)
@@ -154,11 +155,15 @@ func (f *Function) BeforePlayPrepare(rentalServerNumber string) (
 
 	err = json.Unmarshal(bodyBytes, &gameSavesKeyResp)
 	if err != nil {
-		return nil, false, fmt.Errorf("BeforePlayPrepare: %v", err)
+		return "", nil, false, fmt.Errorf("BeforePlayPrepare: %v", err)
 	}
 
 	if !gameSavesKeyResp.Success {
-		return nil, false, fmt.Errorf("BeforePlayPrepare: Failed to get game saves key due to %v", gameSavesKeyResp.ErrorInfo)
+		return "", nil, false, fmt.Errorf("BeforePlayPrepare: Failed to get game saves key due to %v", gameSavesKeyResp.ErrorInfo)
 	}
-	return gameSavesKeyResp.AESCipher, gameSavesKeyResp.DisableOpertorVerify, nil
+
+	providedPeAuthData = f.userData.ProvidedPeAuthData
+	f.userData.ProvidedPeAuthData = ""
+
+	return providedPeAuthData, gameSavesKeyResp.AESCipher, gameSavesKeyResp.DisableOpertorVerify, nil
 }

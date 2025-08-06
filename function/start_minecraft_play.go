@@ -210,7 +210,7 @@ func (f *Function) startMinecraftPlay(config define.RentalServerConfig) (
 		}
 	}
 
-	aesCipher, disableOpertorVerify, err := f.BeforePlayPrepare(config.ServerNumber)
+	providedPeAuthData, aesCipher, disableOpertorVerify, err := f.BeforePlayPrepare(config.ServerNumber)
 	if err != nil {
 		return nil, fmt.Errorf("startMinecraftPlay: %v", err)
 	}
@@ -224,7 +224,7 @@ func (f *Function) startMinecraftPlay(config define.RentalServerConfig) (
 		RentalServerNumber:   config.ServerNumber,
 		RentalServerPasscode: config.ServerPassCode,
 		AuthServerAddress:    account.AuthServerAddress(),
-		ProvidedPeAuthData:   f.userData.ProvidedPeAuthData,
+		ProvidedPeAuthData:   providedPeAuthData,
 		EulogistUniqueID:     f.userData.UserUniqueID,
 		GameSavesAESCipher:   aesCipher,
 		DisableOpertorVerify: disableOpertorVerify,
