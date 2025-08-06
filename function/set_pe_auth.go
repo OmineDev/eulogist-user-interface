@@ -52,7 +52,7 @@ func (f *Function) SetPEAuth() error {
 		fmt.Sprintf("%s/set_pe_auth", define.StdAuthServerAddress),
 		PEAuthSetRequest{
 			Token:  f.config.EulogistToken,
-			PEAuth: resp.([]any)[1].(string),
+			PEAuth: peAuth,
 		},
 	)
 	if err != nil {
