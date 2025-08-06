@@ -2,7 +2,6 @@ package function
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
@@ -71,7 +70,6 @@ func (f *Function) ShowEulogistSearch() (eulogistUserName string, isUserCancel b
 		return "", true, nil
 	}
 
-	replaceString := fmt.Sprintf("§r§c%s§r", filterString)
 	actionForm := form.ActionForm{
 		Title: "搜索结果",
 	}
@@ -82,7 +80,7 @@ func (f *Function) ShowEulogistSearch() (eulogistUserName string, isUserCancel b
 	}
 	for _, value := range userSearchResponse.HitUserName {
 		actionForm.Buttons = append(actionForm.Buttons, form.ActionFormElement{
-			Text: strings.ReplaceAll(value, filterString, replaceString),
+			Text: utils.HighLightString(value, filterString, "§c"),
 			Icon: form.ActionFormIconNone{},
 		})
 	}
