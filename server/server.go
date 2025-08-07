@@ -49,7 +49,8 @@ func (s *Server) RunServer(address string) error {
 	}
 
 	config := minecraft.ListenConfig{
-		AllowUnknownPackets: true,
+		AuthenticationDisabled: true,
+		AllowUnknownPackets:    true,
 		StatusProvider: minecraft.NewStatusProvider(
 			"Eulogist", "Eulogist",
 		),
