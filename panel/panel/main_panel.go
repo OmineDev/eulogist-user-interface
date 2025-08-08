@@ -167,7 +167,7 @@ func (p *Panel) formatUserData() (content string) {
 		hours := totalSeconds/3600 - days*24
 		minutes := totalSeconds/60 - hours*60 - days*1440
 		content += fmt.Sprintf(
-			"  - 封禁状态: §r§c正被封禁 §r(还剩 §b%d §r天 §b%d §r时 §b%d §r秒)§r\n",
+			"  - 封禁状态: §r§c正被封禁 §r(还剩 §b%d §r天 §b%d §r时 §b%d §r分)§r\n",
 			days, hours, minutes,
 		)
 	} else {
