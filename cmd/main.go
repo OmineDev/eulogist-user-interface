@@ -2,15 +2,17 @@ package main
 
 import (
 	"encoding/hex"
+	"fmt"
 
 	"github.com/deatil/go-cryptobin/cryptobin/crypto"
 	"github.com/df-mc/goleveldb/leveldb"
 )
 
-var keyHexString = "8afdfad6dec562be40a205e366ddc435"
-
 func main() {
 	var dbKeys [][]byte
+
+	keyHexString := ReadStringFromPanel("请输入存档解密密钥: ")
+	mcworldPath := ReadStringFromPanel("请输入存档路径: ")
 
 	keyBytes, err := hex.DecodeString(keyHexString)
 	if err != nil {
@@ -18,7 +20,7 @@ func main() {
 	}
 	keyString := string(keyBytes)
 
-	db, err := leveldb.OpenFile("world/db", nil)
+	db, err := leveldb.OpenFile(fmt.Sprintf("%s/db", mcworldPath), nil)
 	if err != nil {
 		panic(err)
 	}
