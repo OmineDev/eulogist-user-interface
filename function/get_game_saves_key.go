@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
@@ -21,10 +22,12 @@ type GameSavesKeyRequest struct {
 
 // GameSavesKeyResponse ..
 type GameSavesKeyResponse struct {
-	ErrorInfo            string `json:"error_info"`
-	Success              bool   `json:"success"`
-	AESCipher            []byte `json:"encrypted_aes_cipher"`
-	DisableOpertorVerify bool   `json:"disable_operator_verify"`
+	ErrorInfo              string `json:"error_info"`
+	Success                bool   `json:"success"`
+	RentelServerNumber     string `json:"rental_server_number"`
+	GameSavesAESCipher     []byte `json:"game_saves_aes_cipher"`
+	DisableOpertorVerify   bool   `json:"disable_operator_verify"`
+	ResponseExpireUnixTime int64  `json:"response_expire_unix_time"`
 }
 
 // GetGameSavesKey ..
@@ -92,7 +95,7 @@ func (f *Function) GetGameSavesKey() error {
 			},
 			form.ModalFormElementInput{
 				Text:        "AES 密钥 (16位, Hex 字符串)",
-				Default:     hex.EncodeToString(gameSavesKeyResp.AESCipher),
+				Default:     hex.EncodeToString(gameSavesKeyResp.GameSavesAESCipher),
 				PlaceHolder: "AES Cipher (Hex string)",
 			},
 		},
@@ -161,9 +164,14 @@ func (f *Function) BeforePlayPrepare(rentalServerNumber string) (
 	if !gameSavesKeyResp.Success {
 		return "", nil, false, fmt.Errorf("BeforePlayPrepare: Failed to get game saves key due to %v", gameSavesKeyResp.ErrorInfo)
 	}
+	if time.Now().Unix() >= gameSavesKeyResp.ResponseExpireUnixTime {
+		return "", nil, false, fmt.Errorf("BeforePlayPrepare: Unsuccessful hacking attempt (mark 0)")
+	}
+	if gameSavesKeyResp.RentelServerNumber != rentalServerNumber {
+		return "", nil, false, fmt.Errorf("BeforePlayPrepare: Unsuccessful hacking attempt (mark 1)")
+	}
 
 	providedPeAuthData = f.userData.ProvidedPeAuthData
 	f.userData.ProvidedPeAuthData = ""
-
-	return providedPeAuthData, gameSavesKeyResp.AESCipher, gameSavesKeyResp.DisableOpertorVerify, nil
+	return providedPeAuthData, gameSavesKeyResp.GameSavesAESCipher, gameSavesKeyResp.DisableOpertorVerify, nil
 }
