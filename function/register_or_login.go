@@ -200,7 +200,9 @@ func (f *Function) login() error {
 		return nil
 	}
 
-	f.config.EulogistToken = loginResponse.EulogistToken
+	f.config = &define.LocalConfig{
+		EulogistToken: loginResponse.EulogistToken,
+	}
 	err = define.WriteConfig(f.config)
 	if err != nil {
 		return fmt.Errorf("login: %v", err)
