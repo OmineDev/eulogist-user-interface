@@ -310,7 +310,7 @@ func (i *Interact) SendLargeActionFormAndWaitResponse(
 }
 
 // SendFormOmitResponse 向客户端发送 minecraftForm 所指示的表单，
-// 并且其所对应的返回值。返回的 ctx 指示表单是否已经被客户端关闭。
+// 但不获取客户端对它的响应值。返回的 ctx 指示表单是否已经被客户端关闭。
 //
 // 若没有关闭，该函数调用者有责任确保使用 formCloseFunc 关闭已经
 // 打开的表单。
