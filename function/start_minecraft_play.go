@@ -220,14 +220,24 @@ func (f *Function) startMinecraftPlay(config define.RentalServerConfig) (
 		return nil, fmt.Errorf("startMinecraftPlay: 已设置的 MC 账号未能找到")
 	}
 
+	useCustomSkin, customSkinData := f.Interact().CachedSkinData()
+	switch f.userData.UserPermissionLevel {
+	case define.UserPermissionSystem:
+	case define.UserPermissionAdmin:
+	default:
+		useCustomSkin, customSkinData = false, nil
+	}
+
 	frontedMsg := MessageFromFronted{
+		EulogistUniqueID:     f.userData.UserUniqueID,
 		RentalServerNumber:   config.ServerNumber,
 		RentalServerPasscode: config.ServerPassCode,
 		AuthServerAddress:    account.AuthServerAddress(),
 		ProvidedPeAuthData:   providedPeAuthData,
-		EulogistUniqueID:     f.userData.UserUniqueID,
 		GameSavesAESCipher:   aesCipher,
 		DisableOpertorVerify: disableOpertorVerify,
+		UseCustomSkin:        useCustomSkin,
+		CustomSkinData:       customSkinData,
 	}
 	if account.IsStdAccount() {
 		frontedMsg.AuthServerToken = fmt.Sprintf("%s|%s", f.config.EulogistToken, account.AuthServerSecret())

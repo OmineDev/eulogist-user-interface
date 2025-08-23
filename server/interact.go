@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -10,24 +11,31 @@ import (
 	"time"
 
 	"github.com/OmineDev/eulogist-user-interface/form"
+	"github.com/YingLunTown-DreamLand/gophertunnel/minecraft/protocol"
 	"github.com/YingLunTown-DreamLand/gophertunnel/minecraft/protocol/packet"
 )
 
 // Interact 是客户端和赞颂者假服务器的表单交互实现
 type Interact struct {
-	mu         *sync.Mutex
+	mu *sync.Mutex
+
 	server     *Server
 	formID     uint32
 	clientResp chan packet.ModalFormResponse
+
+	haveCachedSkinData bool
+	cachedSkinData     []byte
 }
 
 // NewInteract 根据 server 创建并返回一个新的交互装置
 func NewInteract(server *Server) *Interact {
 	interact := &Interact{
-		mu:         new(sync.Mutex),
-		server:     server,
-		formID:     0,
-		clientResp: make(chan packet.ModalFormResponse),
+		mu:                 new(sync.Mutex),
+		server:             server,
+		formID:             0,
+		clientResp:         make(chan packet.ModalFormResponse),
+		haveCachedSkinData: false,
+		cachedSkinData:     nil,
 	}
 	go interact.handlePacket()
 	return interact
@@ -342,24 +350,42 @@ func (i *Interact) SendFormOmitResponse(minecraftForm form.MinecraftForm) (
 	return
 }
 
+// CachedSkinData ..
+func (i *Interact) CachedSkinData() (haveSkinData bool, skinData []byte) {
+	return i.haveCachedSkinData, i.cachedSkinData
+}
+
 // handlePacket 不断地读取数据包，
 // 并期望下一个抵达的数据包是客户端对表单的响应
 func (i *Interact) handlePacket() {
 	for {
+		// Read packet
 		pk, err := i.server.MinecraftConn().ReadPacket()
 		if err != nil {
 			return
 		}
-
-		p, ok := pk.(*packet.ModalFormResponse)
-		if !ok {
-			continue
-		}
-
-		select {
-		case i.clientResp <- *p:
-		case <-i.Server().MinecraftConn().Context().Done():
-			return
+		// Process packet
+		switch p := pk.(type) {
+		case *packet.ModalFormResponse:
+			select {
+			case i.clientResp <- *p:
+			case <-i.Server().MinecraftConn().Context().Done():
+				return
+			}
+		case *packet.PlayerSkin:
+			// Marshal skin data
+			buf := bytes.NewBuffer(nil)
+			writer := protocol.NewWriter(buf, 0)
+			p.Skin.Marshal(writer)
+			// Do sync
+			i.haveCachedSkinData = true
+			i.cachedSkinData = buf.Bytes()
+			// Check connection
+			select {
+			case <-i.Server().MinecraftConn().Context().Done():
+				return
+			default:
+			}
 		}
 	}
 }

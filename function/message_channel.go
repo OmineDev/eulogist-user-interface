@@ -2,14 +2,20 @@ package function
 
 // MessageFromFronted ..
 type MessageFromFronted struct {
+	EulogistUniqueID string
+
 	RentalServerNumber   string
 	RentalServerPasscode string
-	AuthServerAddress    string
-	AuthServerToken      string
-	ProvidedPeAuthData   string
-	EulogistUniqueID     string
+
+	AuthServerAddress  string
+	AuthServerToken    string
+	ProvidedPeAuthData string
+
 	GameSavesAESCipher   []byte
 	DisableOpertorVerify bool
+
+	UseCustomSkin  bool
+	CustomSkinData []byte
 }
 
 // MessageFromBacked ..
