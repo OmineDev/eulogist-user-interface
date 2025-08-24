@@ -69,7 +69,7 @@ func (f *Function) AdminChangeMainConfig(eulogistUserName string) error {
 			},
 			form.ModalFormElementDropdown{
 				Text:    "权限等级",
-				Options: []string{"系统", "赞颂者管理人员", "租赁服管理人员", "普通用户", "访客"},
+				Options: []string{"系统", "赞颂者管理人员", "高级用户", "普通用户", "访客"},
 				Default: uint(userData.UserPermissionLevel),
 			},
 			form.ModalFormElementInput{

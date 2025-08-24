@@ -150,8 +150,8 @@ func (p *Panel) formatUserData() (content string) {
 		content += "  - 用户权限: §r§a系统§r\n"
 	case define.UserPermissionAdmin:
 		content += "  - 用户权限: §r§a管理员§r\n"
-	case define.UserPermissionManager:
-		content += "  - 用户权限: §r§e租赁服管理员§r\n"
+	case define.UserPermissionAdvance:
+		content += "  - 用户权限: §r§e高级用户§r\n"
 	case define.UserPermissionNormal:
 		content += "  - 用户权限: §r§r普通用户§r\n"
 	case define.UserPermissionNone:
