@@ -224,6 +224,7 @@ func (f *Function) startMinecraftPlay(config define.RentalServerConfig) (
 	switch f.userData.UserPermissionLevel {
 	case define.UserPermissionSystem:
 	case define.UserPermissionAdmin:
+	case define.UserPermissionAdvance:
 	default:
 		useCustomSkin, customSkinData = false, nil
 	}
