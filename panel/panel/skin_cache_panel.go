@@ -31,16 +31,16 @@ func (p *Panel) SkinCachePanel() error {
 			Title: "Choose an operation",
 			Content: "" +
 				"This page only open for those who have advance access.\n\n" +
-				"Choose §r§eUse Built In Skin§r would lead you to set a built in skin, \n" +
-				"and choose §r§eUse Custom Skin§r would lead you to set a custom skin.\n\n" +
+				"Choose §r§eUse built in skin§r would lead you to set a built in skin, \n" +
+				"and choose §r§eUse custom skin§r would lead you to set a custom skin.\n\n" +
 				"Note that this setting is §r§eone-time§r, and also you must ensure you §r§eequipped§r a verified NetEase skin.",
 			Buttons: []form.ActionFormElement{
 				{
-					Text: "Use Built In Skin",
+					Text: "Use built in skin",
 					Icon: form.ActionFormIconNone{},
 				},
 				{
-					Text: "Use Custom Skin",
+					Text: "Use custom skin",
 					Icon: form.ActionFormIconNone{},
 				},
 				{
