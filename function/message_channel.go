@@ -16,6 +16,9 @@ type MessageFromFronted struct {
 
 	UseCustomSkin  bool
 	CustomSkinData []byte
+
+	HaveSkinCacheData bool
+	SkinDownloadURL   string
 }
 
 // MessageFromBacked ..

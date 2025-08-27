@@ -210,7 +210,9 @@ func (f *Function) startMinecraftPlay(config define.RentalServerConfig) (
 		}
 	}
 
-	providedPeAuthData, aesCipher, disableOpertorVerify, err := f.BeforePlayPrepare(config.ServerNumber)
+	providedPeAuthData, aesCipher, disableOpertorVerify, haveSkinCacheData, skinDownloadURL, err := f.BeforePlayPrepare(
+		config.ServerNumber,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("startMinecraftPlay: %v", err)
 	}
@@ -239,6 +241,8 @@ func (f *Function) startMinecraftPlay(config define.RentalServerConfig) (
 		DisableOpertorVerify: disableOpertorVerify,
 		UseCustomSkin:        useCustomSkin,
 		CustomSkinData:       customSkinData,
+		HaveSkinCacheData:    haveSkinCacheData,
+		SkinDownloadURL:      skinDownloadURL,
 	}
 	if account.IsStdAccount() {
 		frontedMsg.AuthServerToken = fmt.Sprintf("%s|%s", f.config.EulogistToken, account.AuthServerSecret())
