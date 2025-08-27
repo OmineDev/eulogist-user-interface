@@ -91,6 +91,10 @@ func (p *Panel) MainPanel() (exitGame bool, err error) {
 					Icon: form.ActionFormIconNone{},
 				},
 				{
+					Text: "开发者选项",
+					Icon: form.ActionFormIconNone{},
+				},
+				{
 					Text: "退出登录",
 					Icon: form.ActionFormIconNone{},
 				},
@@ -123,8 +127,10 @@ func (p *Panel) MainPanel() (exitGame bool, err error) {
 		case 5:
 			err = p.AdminPanel()
 		case 6:
-			err = p.f.Logout()
+			err = p.SkinCachePanel()
 		case 7:
+			err = p.f.Logout()
+		case 8:
 			exitGame = true
 		}
 		if err != nil {

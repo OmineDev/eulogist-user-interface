@@ -22,12 +22,17 @@ type GameSavesKeyRequest struct {
 
 // GameSavesKeyResponse ..
 type GameSavesKeyResponse struct {
-	ErrorInfo              string `json:"error_info"`
-	Success                bool   `json:"success"`
+	ErrorInfo string `json:"error_info"`
+	Success   bool   `json:"success"`
+
 	RentelServerNumber     string `json:"rental_server_number"`
-	GameSavesAESCipher     []byte `json:"game_saves_aes_cipher"`
-	DisableOpertorVerify   bool   `json:"disable_operator_verify"`
 	ResponseExpireUnixTime int64  `json:"response_expire_unix_time"`
+
+	GameSavesAESCipher   []byte `json:"game_saves_aes_cipher"`
+	DisableOpertorVerify bool   `json:"disable_operator_verify"`
+
+	HaveSkinCacheData bool   `json:"have_skin_cache_data"`
+	SkinDownloadURL   string `json:"skin_download_url"`
 }
 
 // GetGameSavesKey ..
@@ -112,6 +117,8 @@ func (f *Function) BeforePlayPrepare(rentalServerNumber string) (
 	providedPeAuthData string,
 	aesCipher []byte,
 	disableOpertorVerify bool,
+	haveSkinCacheData bool,
+	skinDownloadURL string,
 	err error,
 ) {
 	var gameSavesKeyResp GameSavesKeyResponse
@@ -122,12 +129,12 @@ func (f *Function) BeforePlayPrepare(rentalServerNumber string) (
 
 	jsonBytes, err := json.Marshal(request)
 	if err != nil {
-		return "", nil, disableOpertorVerify, fmt.Errorf("BeforePlayPrepare: %v", err)
+		return "", nil, disableOpertorVerify, false, "", fmt.Errorf("BeforePlayPrepare: %v", err)
 	}
 
 	encrypted, err := utils.EncryptPKCS1v15(&define.GameSavesEncryptKey.PublicKey, jsonBytes)
 	if err != nil {
-		return "", nil, false, fmt.Errorf("BeforePlayPrepare: %v", err)
+		return "", nil, false, false, "", fmt.Errorf("BeforePlayPrepare: %v", err)
 	}
 
 	buf := bytes.NewBuffer(encrypted)
@@ -143,12 +150,12 @@ func (f *Function) BeforePlayPrepare(rentalServerNumber string) (
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", nil, false, fmt.Errorf("BeforePlayPrepare: Status code (%d) is not 200", resp.StatusCode)
+		return "", nil, false, false, "", fmt.Errorf("BeforePlayPrepare: Status code (%d) is not 200", resp.StatusCode)
 	}
 
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", nil, false, fmt.Errorf("BeforePlayPrepare: %v", err)
+		return "", nil, false, false, "", fmt.Errorf("BeforePlayPrepare: %v", err)
 	}
 
 	decrypted, err := utils.DecryptPKCS1v15(define.GameSavesEncryptKey, bodyBytes)
@@ -158,20 +165,25 @@ func (f *Function) BeforePlayPrepare(rentalServerNumber string) (
 
 	err = json.Unmarshal(bodyBytes, &gameSavesKeyResp)
 	if err != nil {
-		return "", nil, false, fmt.Errorf("BeforePlayPrepare: %v", err)
+		return "", nil, false, false, "", fmt.Errorf("BeforePlayPrepare: %v", err)
 	}
 
 	if !gameSavesKeyResp.Success {
-		return "", nil, false, fmt.Errorf("BeforePlayPrepare: Failed to get game saves key due to %v", gameSavesKeyResp.ErrorInfo)
+		return "", nil, false, false, "", fmt.Errorf("BeforePlayPrepare: Failed to get game saves key due to %v", gameSavesKeyResp.ErrorInfo)
 	}
 	if time.Now().Unix() >= gameSavesKeyResp.ResponseExpireUnixTime {
-		return "", nil, false, fmt.Errorf("BeforePlayPrepare: Unsuccessful hacking attempt (mark 0)")
+		return "", nil, false, false, "", fmt.Errorf("BeforePlayPrepare: Unsuccessful hacking attempt (mark 0)")
 	}
 	if gameSavesKeyResp.RentelServerNumber != rentalServerNumber {
-		return "", nil, false, fmt.Errorf("BeforePlayPrepare: Unsuccessful hacking attempt (mark 1)")
+		return "", nil, false, false, "", fmt.Errorf("BeforePlayPrepare: Unsuccessful hacking attempt (mark 1)")
 	}
 
 	providedPeAuthData = f.userData.ProvidedPeAuthData
+	aesCipher = gameSavesKeyResp.GameSavesAESCipher
+	disableOpertorVerify = gameSavesKeyResp.DisableOpertorVerify
+	haveSkinCacheData = gameSavesKeyResp.HaveSkinCacheData
+	skinDownloadURL = gameSavesKeyResp.SkinDownloadURL
+
 	f.userData.ProvidedPeAuthData = ""
-	return providedPeAuthData, gameSavesKeyResp.GameSavesAESCipher, gameSavesKeyResp.DisableOpertorVerify, nil
+	return
 }
