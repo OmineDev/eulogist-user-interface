@@ -8,7 +8,7 @@ import (
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
 	"github.com/OmineDev/eulogist-user-interface/utils"
-	"github.com/YingLunTown-DreamLand/gophertunnel/minecraft/protocol"
+	"github.com/ToolDelta-Basic/gophertunnel/minecraft/protocol"
 )
 
 // SetSkinCacheRequest ..
