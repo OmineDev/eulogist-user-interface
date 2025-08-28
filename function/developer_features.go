@@ -97,10 +97,6 @@ func (f *Function) UseBuiltInSkin() (success bool, err error) {
 			Icon: form.ActionFormIconNone{},
 		})
 	}
-	actionForm.Buttons = append(actionForm.Buttons, form.ActionFormElement{
-		Text: "Back to main panel",
-		Icon: form.ActionFormIconNone{},
-	})
 
 	resp, isUserCancel, err := f.interact.SendLargeActionFormAndWaitResponse(actionForm, define.DefaultPageSize)
 	if err != nil {
@@ -110,10 +106,8 @@ func (f *Function) UseBuiltInSkin() (success bool, err error) {
 		return false, nil
 	}
 
-	if int(resp) == len(actionForm.Buttons)-1 {
-		return false, nil
-	}
-	if err = f.sendSetSkinCacheRequest(builtInSkinResp.SkinDownloadURL[resp]); err != nil {
+	err = f.sendSetSkinCacheRequest(builtInSkinResp.SkinDownloadURL[resp])
+	if err != nil {
 		return false, fmt.Errorf("UseBuiltInSkin: %v", err)
 	}
 
