@@ -115,6 +115,8 @@ func (f *Function) startMinecraftPlay(config define.RentalServerConfig) (
 	err error,
 ) {
 	var userIsSettingAccount bool
+	var useCustomSkin bool
+	var customSkinData []byte
 
 	if f.config.LastServerConfig != config {
 		f.config.LastServerConfig = config
@@ -210,9 +212,13 @@ func (f *Function) startMinecraftPlay(config define.RentalServerConfig) (
 		}
 	}
 
-	providedPeAuthData, aesCipher, disableOpertorVerify, haveSkinCacheData, skinDownloadURL, err := f.BeforePlayPrepare(
-		config.ServerNumber,
-	)
+	userPermissionLevel,
+		providedPeAuthData,
+		aesCipher,
+		disableOpertorVerify,
+		haveSkinCacheData,
+		skinDownloadURL,
+		err := f.BeforePlayPrepare(config.ServerNumber)
 	if err != nil {
 		return nil, fmt.Errorf("startMinecraftPlay: %v", err)
 	}
@@ -222,13 +228,14 @@ func (f *Function) startMinecraftPlay(config define.RentalServerConfig) (
 		return nil, fmt.Errorf("startMinecraftPlay: 已设置的 MC 账号未能找到")
 	}
 
-	useCustomSkin, customSkinData := f.Interact().CachedSkinData()
-	switch f.userData.UserPermissionLevel {
-	case define.UserPermissionSystem:
-	case define.UserPermissionAdmin:
-	case define.UserPermissionAdvance:
-	default:
-		useCustomSkin, customSkinData = false, nil
+	if f.customData.useCustomSkin {
+		switch userPermissionLevel {
+		case define.UserPermissionSystem, define.UserPermissionAdmin, define.UserPermissionAdvance:
+			useCustomSkin = true
+			customSkinData = f.customData.customSkinData
+		default:
+			return nil, fmt.Errorf("startMinecraftPlay: Unsuccessful hacking attempt (mark 2)")
+		}
 	}
 
 	frontedMsg := MessageFromFronted{

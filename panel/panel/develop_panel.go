@@ -7,8 +7,8 @@ import (
 	"github.com/OmineDev/eulogist-user-interface/form"
 )
 
-// SkinCachePanel ..
-func (p *Panel) SkinCachePanel() error {
+// DevelopPanel ..
+func (p *Panel) DevelopPanel() error {
 	switch p.f.EulogistUserData().UserPermissionLevel {
 	case define.UserPermissionSystem:
 	case define.UserPermissionAdmin:
@@ -21,19 +21,26 @@ func (p *Panel) SkinCachePanel() error {
 			Button2: "返回上一级菜单",
 		})
 		if err != nil {
-			return fmt.Errorf("SkinCachePanel: %v", err)
+			return fmt.Errorf("DevelopPanel: %v", err)
 		}
 		return nil
 	}
 
 	for {
+		var success bool
+
 		actionForm := form.ActionForm{
-			Title: "Choose an operation",
+			Title: "Developer features",
 			Content: "" +
 				"This page only open for those who have advance access.\n\n" +
-				"Choose §r§eUse built in skin§r would lead you to set a built in skin, \n" +
-				"and choose §r§eUse custom skin§r would lead you to set a custom skin.\n\n" +
-				"Note that this setting is §r§eone-time§r, and also you must ensure you §r§eequipped§r a verified NetEase skin.",
+				"" +
+				" - Select §r§eUse built in skin§r would lead you to set a built in skin.\n" +
+				" - Select §r§eUse custom skin§r would lead you to set a custom skin.\n" +
+				" - Select §r§eUse skin from standard Minecraft§r would lead you to\n" +
+				"select a skin from standard Minecraft without exit current game.\n\n" +
+				"" +
+				"Note that this setting is §r§eone-time§r, \n" +
+				"and also you must ensure you §r§eequipped§r a verified NetEase skin.",
 			Buttons: []form.ActionFormElement{
 				{
 					Text: "Use built in skin",
@@ -41,6 +48,10 @@ func (p *Panel) SkinCachePanel() error {
 				},
 				{
 					Text: "Use custom skin",
+					Icon: form.ActionFormIconNone{},
+				},
+				{
+					Text: "Use skin from standard Minecraft",
 					Icon: form.ActionFormIconNone{},
 				},
 				{
@@ -52,7 +63,7 @@ func (p *Panel) SkinCachePanel() error {
 
 		resp, isUserCancel, err := p.f.Interact().SendFormAndWaitResponse(actionForm)
 		if err != nil {
-			return fmt.Errorf("SkinCachePanel: %v", err)
+			return fmt.Errorf("DevelopPanel: %v", err)
 		}
 		if isUserCancel {
 			return nil
@@ -60,17 +71,19 @@ func (p *Panel) SkinCachePanel() error {
 
 		switch resp.(int32) {
 		case 0:
-			isUserCancel, err = p.f.UseBuiltInSkin()
+			success, err = p.f.UseBuiltInSkin()
 		case 1:
-			isUserCancel, err = p.f.UseCustomSkin()
+			success, err = p.f.UseCustomSkin()
 		case 2:
+			err = p.f.UseSkinFromMinecraft()
+		case 3:
 			return nil
 		}
 
 		if err != nil {
-			return fmt.Errorf("SkinCachePanel: %v", err)
+			return fmt.Errorf("DevelopPanel: %v", err)
 		}
-		if !isUserCancel {
+		if success {
 			return nil
 		}
 	}

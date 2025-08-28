@@ -1,7 +1,6 @@
 package server
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -17,25 +16,21 @@ import (
 
 // Interact 是客户端和赞颂者假服务器的表单交互实现
 type Interact struct {
-	mu *sync.Mutex
-
+	mu         *sync.Mutex
 	server     *Server
 	formID     uint32
 	clientResp chan packet.ModalFormResponse
-
-	haveCachedSkinData bool
-	cachedSkinData     []byte
+	skinWaiter chan packet.PlayerSkin
 }
 
 // NewInteract 根据 server 创建并返回一个新的交互装置
 func NewInteract(server *Server) *Interact {
 	interact := &Interact{
-		mu:                 new(sync.Mutex),
-		server:             server,
-		formID:             0,
-		clientResp:         make(chan packet.ModalFormResponse),
-		haveCachedSkinData: false,
-		cachedSkinData:     nil,
+		mu:         new(sync.Mutex),
+		server:     server,
+		formID:     0,
+		clientResp: make(chan packet.ModalFormResponse),
+		skinWaiter: make(chan packet.PlayerSkin),
 	}
 	go interact.handlePacket()
 	return interact
@@ -350,9 +345,25 @@ func (i *Interact) SendFormOmitResponse(minecraftForm form.MinecraftForm) (
 	return
 }
 
-// CachedSkinData ..
-func (i *Interact) CachedSkinData() (haveSkinData bool, skinData []byte) {
-	return i.haveCachedSkinData, i.cachedSkinData
+// WaitClientUseSkin ..
+func (i *Interact) WaitClientUseSkin(timeOut time.Duration) (skin protocol.Skin, isTimeOut bool) {
+	i.mu.Lock()
+	defer i.mu.Unlock()
+
+	if timeOut == 0 {
+		pk := <-i.skinWaiter
+		return pk.Skin, false
+	}
+
+	timer := time.NewTimer(timeOut)
+	defer timer.Stop()
+
+	select {
+	case pk := <-i.skinWaiter:
+		return pk.Skin, false
+	case <-timer.C:
+		return protocol.Skin{}, true
+	}
 }
 
 // handlePacket 不断地读取数据包，
@@ -373,15 +384,8 @@ func (i *Interact) handlePacket() {
 				return
 			}
 		case *packet.PlayerSkin:
-			// Marshal skin data
-			buf := bytes.NewBuffer(nil)
-			writer := protocol.NewWriter(buf, 0)
-			p.Skin.Marshal(writer)
-			// Do sync
-			i.haveCachedSkinData = true
-			i.cachedSkinData = buf.Bytes()
-			// Check connection
 			select {
+			case i.skinWaiter <- *p:
 			case <-i.Server().MinecraftConn().Context().Done():
 				return
 			default:
