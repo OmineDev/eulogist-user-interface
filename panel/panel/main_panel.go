@@ -127,7 +127,7 @@ func (p *Panel) MainPanel() (exitGame bool, err error) {
 		case 5:
 			err = p.AdminPanel()
 		case 6:
-			err = p.SkinCachePanel()
+			err = p.DevelopPanel()
 		case 7:
 			err = p.f.Logout()
 		case 8:
