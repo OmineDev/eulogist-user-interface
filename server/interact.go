@@ -363,6 +363,8 @@ func (i *Interact) WaitClientUseSkin(timeOut time.Duration) (skin protocol.Skin,
 		return pk.Skin, false
 	case <-timer.C:
 		return protocol.Skin{}, true
+	case <-i.Server().MinecraftConn().Context().Done():
+		return protocol.Skin{}, true
 	}
 }
 
