@@ -78,6 +78,7 @@ func MainEntry(realAddress string, showAddress string, bedrockVersion string) (
 
 			select {
 			case <-wrapper.server.MinecraftConn().Context().Done():
+				_ = wrapper.server.CloseServer()
 				return
 			default:
 			}
