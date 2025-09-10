@@ -351,8 +351,12 @@ func (i *Interact) WaitClientUseSkin(timeOut time.Duration) (skin protocol.Skin,
 	defer i.mu.Unlock()
 
 	if timeOut == 0 {
-		pk := <-i.skinWaiter
-		return pk.Skin, false
+		select {
+		case pk := <-i.skinWaiter:
+			return pk.Skin, false
+		case <-i.Server().MinecraftConn().Context().Done():
+			return protocol.Skin{}, true
+		}
 	}
 
 	timer := time.NewTimer(timeOut)
