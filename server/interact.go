@@ -273,7 +273,7 @@ func (i *Interact) sendLargeActionFormAndWaitResponse(
 		case exitIndex:
 			return 0, true, nil
 		default:
-			panic("SendLargeActionFormAndWaitResponse: Should nerver happened")
+			panic("SendLargeActionFormAndWaitResponse: Should never happened")
 		}
 	}
 }
