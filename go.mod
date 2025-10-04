@@ -3,7 +3,7 @@ module github.com/OmineDev/eulogist-user-interface
 go 1.24.0
 
 require (
-	github.com/YingLunTown-DreamLand/gophertunnel v1.52.0
+	github.com/YingLunTown-DreamLand/gophertunnel v1.52.1
 	github.com/deatil/go-cryptobin v1.1.1005
 )
 
@@ -26,7 +26,7 @@ require (
 require (
 	github.com/df-mc/goleveldb v1.1.9
 	github.com/go-gl/mathgl v1.2.0 // indirect
-	github.com/go-jose/go-jose/v4 v4.1.2 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.3 // indirect
 	github.com/golang/snappy v1.0.0 // indirect
 	github.com/google/uuid v1.6.0
 	github.com/klauspost/compress v1.18.0 // indirect
