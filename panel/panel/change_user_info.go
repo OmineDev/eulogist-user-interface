@@ -61,7 +61,7 @@ func (p *Panel) ChangeUserInfo() error {
 	newUserName := respList[1].(string)
 	newPassword := respList[2].(string)
 	if len(newPassword) > 0 {
-		newPasswordSum256 := sha256.Sum256([]byte(newPassword + define.UserPasswordSlat))
+		newPasswordSum256 := sha256.Sum256([]byte(newPassword + define.UserPasswordSalt))
 		newPasswordSum256Bytes = newPasswordSum256[:]
 	}
 

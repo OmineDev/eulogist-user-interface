@@ -105,7 +105,7 @@ func (f *Function) register() error {
 	respList := resp.([]any)
 	userName := respList[1].(string)
 	userPassword := respList[2].(string)
-	userPasswordSum256 := sha256.Sum256([]byte(userPassword + define.UserPasswordSlat))
+	userPasswordSum256 := sha256.Sum256([]byte(userPassword + define.UserPasswordSalt))
 
 	loginResponse, err := utils.SendAndGetHttpResponse[LoginResponse](
 		fmt.Sprintf("%s/register_or_login", define.StdAuthServerAddress),
@@ -173,7 +173,7 @@ func (f *Function) login() error {
 	respList := resp.([]any)
 	userName := respList[1].(string)
 	userPassword := respList[2].(string)
-	userPasswordSum256 := sha256.Sum256([]byte(userPassword + define.UserPasswordSlat))
+	userPasswordSum256 := sha256.Sum256([]byte(userPassword + define.UserPasswordSalt))
 
 	loginResponse, err := utils.SendAndGetHttpResponse[LoginResponse](
 		fmt.Sprintf("%s/register_or_login", define.StdAuthServerAddress),

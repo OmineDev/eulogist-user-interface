@@ -9,7 +9,7 @@ import (
 
 const (
 	EulogistConfigFileName = "eulogist_config.json"
-	UserPasswordSlat       = "YoRHa"
+	UserPasswordSalt       = "YoRHa"
 	DefaultPageSize        = 5
 )
 
