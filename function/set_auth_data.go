@@ -116,7 +116,7 @@ func (f *Function) SetAuthData() error {
 		if resp.(int32) == 2 {
 			messageForm := form.MessageForm{
 				Title:   "二重确认",
-				Content: "您确定要§r§e清除登录状态§r吗？",
+				Content: "您确定要§r§c清除登录状态§r吗？",
 				Button1: "确定",
 				Button2: "取消",
 			}
