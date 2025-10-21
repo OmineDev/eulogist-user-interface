@@ -116,7 +116,7 @@ func (f *Function) ShowHelperDetails() error {
 			)
 		case AccountTypePeAuth:
 			content = fmt.Sprintf(
-				"● 游戏昵称: %s\n● 账户类型: 内置验证服务账户 (PE Auth)",
+				"● 游戏昵称: %s\n● 账户类型: 内置验证服务账户 (Pe Auth)",
 				fmt.Sprintf(
 					"§r§l§e%s §r§l(§b%s§r§l)§r",
 					helpInfoResponse.GameNickName,

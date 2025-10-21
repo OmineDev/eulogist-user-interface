@@ -25,6 +25,7 @@ type AuthDataSetResponse struct {
 // SetAuthData 打开表单以使用户设置其所使用的 Pe Auth 或 Sa Auth
 func (f *Function) SetAuthData() error {
 	for {
+		var doClean bool
 		var peAuth string
 		var saAuth string
 
@@ -32,8 +33,8 @@ func (f *Function) SetAuthData() error {
 			Title: "设置账号登录状态",
 			Content: "" +
 				"这是一个§r§e高级选项§r, 用于§r§e渠道服登录§r。\n" +
-				"设置后, 下次将使用它对应的 MC 账户进服。\n" +
-				"如果您不知道它的使用方法, 请§r§e返回到上一级菜单§r, 否则您的下次进服可能会§r§c出现未知问题§r。",
+				"设置后, 未来一段时间内将通过该 MC 账户进服。\n" +
+				"请确保您§r§e知道§r它们的用法, 否则可能会遇见§r§e出现未知问题§r。",
 			Buttons: []form.ActionFormElement{
 				{
 					Text: "设置 Pe Auth",
@@ -64,10 +65,10 @@ func (f *Function) SetAuthData() error {
 
 		if resp.(int32) == 0 {
 			modalForm := form.ModalForm{
-				Title: "设置 PE Auth",
+				Title: "设置 Pe Auth",
 				Contents: []form.ModalFormElement{
 					form.ModalFormElementLabel{
-						Text: "请填写 PE Auth 字符串。",
+						Text: "请填写 Pe Auth 字符串。",
 					},
 					form.ModalFormElementInput{
 						Text:        "Pe Auth",
@@ -112,12 +113,30 @@ func (f *Function) SetAuthData() error {
 
 			saAuth = resp.([]any)[1].(string)
 		}
+		if resp.(int32) == 2 {
+			messageForm := form.MessageForm{
+				Title:   "二重确认",
+				Content: "您确定要§r§e清除登录状态§r吗？",
+				Button1: "确定",
+				Button2: "取消",
+			}
+
+			resp, isUserCancel, err := f.interact.SendFormAndWaitResponse(messageForm)
+			if err != nil {
+				return fmt.Errorf("SetAuthData: %v", err)
+			}
+			if isUserCancel || !resp.(bool) {
+				continue
+			}
+
+			doClean = true
+		}
 
 		authDataSetResp, err := utils.SendAndGetHttpResponse[AuthDataSetResponse](
 			fmt.Sprintf("%s/set_auth_data", define.StdAuthServerAddress),
 			AuthDataSetRequest{
 				Token:   f.config.EulogistToken,
-				DoClean: resp.(int32) == 2,
+				DoClean: doClean,
 				PeAuth:  peAuth,
 				SaAuth:  saAuth,
 			},
