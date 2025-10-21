@@ -29,7 +29,7 @@ func (f *Function) SetAuthData() error {
 		var saAuth string
 
 		minecraftForm := form.ActionForm{
-			Title: "设置 PE Auth 或 Sa Auth",
+			Title: "设置账号登录状态",
 			Content: "" +
 				"这是一个§r§e高级选项§r, 用于§r§e渠道服登录§r。\n" +
 				"设置后, 下次将使用它对应的 MC 账户进服。\n" +
@@ -44,6 +44,10 @@ func (f *Function) SetAuthData() error {
 					Icon: form.ActionFormIconNone{},
 				},
 				{
+					Text: "清除登录状态",
+					Icon: form.ActionFormIconNone{},
+				},
+				{
 					Text: "返回上一级菜单",
 					Icon: form.ActionFormIconNone{},
 				},
@@ -54,7 +58,7 @@ func (f *Function) SetAuthData() error {
 		if err != nil {
 			return fmt.Errorf("SetAuthData: %v", err)
 		}
-		if isUserCancel || resp.(int32) == 2 {
+		if isUserCancel || resp.(int32) == 3 {
 			return nil
 		}
 
@@ -82,7 +86,8 @@ func (f *Function) SetAuthData() error {
 			}
 
 			peAuth = resp.([]any)[1].(string)
-		} else {
+		}
+		if resp.(int32) == 1 {
 			modalForm := form.ModalForm{
 				Title: "设置 Sa Auth",
 				Contents: []form.ModalFormElement{
@@ -111,9 +116,10 @@ func (f *Function) SetAuthData() error {
 		authDataSetResp, err := utils.SendAndGetHttpResponse[AuthDataSetResponse](
 			fmt.Sprintf("%s/set_auth_data", define.StdAuthServerAddress),
 			AuthDataSetRequest{
-				Token:  f.config.EulogistToken,
-				PeAuth: peAuth,
-				SaAuth: saAuth,
+				Token:   f.config.EulogistToken,
+				DoClean: resp.(int32) == 2,
+				PeAuth:  peAuth,
+				SaAuth:  saAuth,
 			},
 		)
 		if err != nil {
