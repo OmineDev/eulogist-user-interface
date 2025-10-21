@@ -116,7 +116,6 @@ func (f *Function) GetGameSavesKey() error {
 // BeforePlayPrepare ..
 func (f *Function) BeforePlayPrepare(rentalServerNumber string) (
 	userPermissionLevel uint8,
-	providedPeAuthData string,
 	aesCipher []byte,
 	disableOpertorVerify bool,
 	haveSkinCacheData bool,
@@ -131,12 +130,12 @@ func (f *Function) BeforePlayPrepare(rentalServerNumber string) (
 
 	jsonBytes, err := json.Marshal(request)
 	if err != nil {
-		return define.UserPermissionNone, "", nil, disableOpertorVerify, false, "", fmt.Errorf("BeforePlayPrepare: %v", err)
+		return define.UserPermissionNone, nil, disableOpertorVerify, false, "", fmt.Errorf("BeforePlayPrepare: %v", err)
 	}
 
 	encrypted, err := utils.EncryptPKCS1v15(&define.GameSavesEncryptKey.PublicKey, jsonBytes)
 	if err != nil {
-		return define.UserPermissionNone, "", nil, false, false, "", fmt.Errorf("BeforePlayPrepare: %v", err)
+		return define.UserPermissionNone, nil, false, false, "", fmt.Errorf("BeforePlayPrepare: %v", err)
 	}
 
 	buf := bytes.NewBuffer(encrypted)
@@ -152,12 +151,12 @@ func (f *Function) BeforePlayPrepare(rentalServerNumber string) (
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return define.UserPermissionNone, "", nil, false, false, "", fmt.Errorf("BeforePlayPrepare: Status code (%d) is not 200", resp.StatusCode)
+		return define.UserPermissionNone, nil, false, false, "", fmt.Errorf("BeforePlayPrepare: Status code (%d) is not 200", resp.StatusCode)
 	}
 
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return define.UserPermissionNone, "", nil, false, false, "", fmt.Errorf("BeforePlayPrepare: %v", err)
+		return define.UserPermissionNone, nil, false, false, "", fmt.Errorf("BeforePlayPrepare: %v", err)
 	}
 
 	decrypted, err := utils.DecryptPKCS1v15(define.GameSavesEncryptKey, bodyBytes)
@@ -167,26 +166,24 @@ func (f *Function) BeforePlayPrepare(rentalServerNumber string) (
 
 	err = json.Unmarshal(bodyBytes, &gameSavesKeyResp)
 	if err != nil {
-		return define.UserPermissionNone, "", nil, false, false, "", fmt.Errorf("BeforePlayPrepare: %v", err)
+		return define.UserPermissionNone, nil, false, false, "", fmt.Errorf("BeforePlayPrepare: %v", err)
 	}
 
 	if !gameSavesKeyResp.Success {
-		return define.UserPermissionNone, "", nil, false, false, "", fmt.Errorf("BeforePlayPrepare: Failed to get game saves key due to %v", gameSavesKeyResp.ErrorInfo)
+		return define.UserPermissionNone, nil, false, false, "", fmt.Errorf("BeforePlayPrepare: Failed to get game saves key due to %v", gameSavesKeyResp.ErrorInfo)
 	}
 	if time.Now().Unix() >= gameSavesKeyResp.ResponseExpireUnixTime {
-		return define.UserPermissionNone, "", nil, false, false, "", fmt.Errorf("BeforePlayPrepare: Unsuccessful hacking attempt (mark 0)")
+		return define.UserPermissionNone, nil, false, false, "", fmt.Errorf("BeforePlayPrepare: Unsuccessful hacking attempt (mark 0)")
 	}
 	if gameSavesKeyResp.RentelServerNumber != rentalServerNumber {
-		return define.UserPermissionNone, "", nil, false, false, "", fmt.Errorf("BeforePlayPrepare: Unsuccessful hacking attempt (mark 1)")
+		return define.UserPermissionNone, nil, false, false, "", fmt.Errorf("BeforePlayPrepare: Unsuccessful hacking attempt (mark 1)")
 	}
 
 	userPermissionLevel = gameSavesKeyResp.UserPermissionLevel
-	providedPeAuthData = f.userData.ProvidedPeAuthData
 	aesCipher = gameSavesKeyResp.GameSavesAESCipher
 	disableOpertorVerify = gameSavesKeyResp.DisableOpertorVerify
 	haveSkinCacheData = gameSavesKeyResp.HaveSkinCacheData
 	skinDownloadURL = gameSavesKeyResp.SkinDownloadURL
 
-	f.userData.ProvidedPeAuthData = ""
 	return
 }

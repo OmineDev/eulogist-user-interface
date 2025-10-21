@@ -17,12 +17,10 @@ type HelperChangeRequest struct {
 
 // HelperChangeResponse ..
 type HelperChangeResponse struct {
-	ErrorInfo            string `json:"error_info"`
-	NetEaseRequireVerify bool   `json:"netease_require_verify"`
-	VerifyURL            string `json:"verify_url"`
-	Success              bool   `json:"success"`
-	GameNickName         string `json:"game_nick_name"`
-	G79UserUID           string `json:"g79_user_uid"`
+	ErrorInfo    string `json:"error_info"`
+	Success      bool   `json:"success"`
+	GameNickName string `json:"game_nick_name"`
+	G79UserUID   string `json:"g79_user_uid"`
 }
 
 // ChangeCurrentHelper 向用户展示其已有的所有 MC 账户，
@@ -61,33 +59,27 @@ func (f *Function) ChangeCurrentHelper() error {
 		return nil
 	}
 
-	for {
-		helperChangeRespose, err = utils.SendAndGetHttpResponse[HelperChangeResponse](
-			fmt.Sprintf("%s/change_current_helper", define.StdAuthServerAddress),
-			HelperChangeRequest{
-				Token: f.config.EulogistToken,
-				Index: uint(resp),
-			},
-		)
+	helperChangeRespose, err = utils.SendAndGetHttpResponse[HelperChangeResponse](
+		fmt.Sprintf("%s/change_current_helper", define.StdAuthServerAddress),
+		HelperChangeRequest{
+			Token: f.config.EulogistToken,
+			Index: uint(resp),
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("ChangeCurrentHelper: %v", err)
+	}
+	if !helperChangeRespose.Success {
+		_, _, err := f.interact.SendFormAndWaitResponse(form.MessageForm{
+			Title:   "错误",
+			Content: helperChangeRespose.ErrorInfo,
+			Button1: "确定",
+			Button2: "返回上一级菜单",
+		})
 		if err != nil {
 			return fmt.Errorf("ChangeCurrentHelper: %v", err)
 		}
-		if !helperChangeRespose.Success {
-			isUserCancel, err = f.ShowAuthServerError(
-				helperChangeRespose.NetEaseRequireVerify,
-				helperChangeRespose.VerifyURL,
-				helperChangeRespose.ErrorInfo,
-			)
-			if err != nil {
-				return fmt.Errorf("ChangeCurrentHelper: %v", err)
-			}
-			if !isUserCancel && helperChangeRespose.NetEaseRequireVerify {
-				continue
-			} else {
-				return nil
-			}
-		}
-		break
+		return nil
 	}
 
 	account := f.userData.MultipleAuthServerAccounts[resp]

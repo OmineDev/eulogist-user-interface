@@ -85,6 +85,10 @@ func (s *StdAuthServerAccount) AuthServerSecret() string {
 	return s.authHelperUniqueID
 }
 
+func (s *StdAuthServerAccount) GameNickName() string {
+	return s.gameNickName
+}
+
 func (s *StdAuthServerAccount) G79UserUID() string {
 	return s.g79UserUID
 }
