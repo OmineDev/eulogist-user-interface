@@ -234,7 +234,7 @@ func (f *Function) RemoveRentalServerConfig() error {
 
 		ensure, isUserCancel, err := f.interact.SendFormAndWaitResponse(form.MessageForm{
 			Title:   "二重确认",
-			Content: "您确定要§r§e删除§r目标租赁服配置吗？",
+			Content: "您确定要§r§c删除§r目标租赁服配置吗？",
 			Button1: "确定",
 			Button2: "取消",
 		})
