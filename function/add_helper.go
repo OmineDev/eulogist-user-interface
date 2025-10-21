@@ -185,7 +185,7 @@ func (f *Function) addStdHelper() error {
 	for {
 		actionForm := form.ActionForm{
 			Title:   "添加账户",
-			Content: "我们目前只支持官服, 渠道服登录请返回上一级菜单, 并使用 §r§ePE Auth§r 凭据。",
+			Content: "添加官服中已注册的网易邮箱或手机账号。",
 			Buttons: []form.ActionFormElement{
 				{
 					Text: "添加网易邮箱对应的 MC 账号",
