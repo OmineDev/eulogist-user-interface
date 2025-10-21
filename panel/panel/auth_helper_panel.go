@@ -38,7 +38,7 @@ func (p *Panel) AuthHelperPanel() error {
 					Icon: form.ActionFormIconNone{},
 				},
 				{
-					Text: "设置一次性 PE Auth 凭据",
+					Text: "设置账号登录状态",
 					Icon: form.ActionFormIconNone{},
 				},
 				{
