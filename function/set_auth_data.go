@@ -97,7 +97,7 @@ func (f *Function) SetAuthData() error {
 					form.ModalFormElementInput{
 						Text:        "Sa Auth",
 						Default:     "",
-						PlaceHolder: `JSON string that not contains "sauth_json"`,
+						PlaceHolder: `JSON string`,
 					},
 				},
 			}
@@ -135,7 +135,7 @@ func (f *Function) SetAuthData() error {
 			if err != nil {
 				return fmt.Errorf("SetAuthData: %v", err)
 			}
-			return nil
+			continue
 		}
 
 		return nil
