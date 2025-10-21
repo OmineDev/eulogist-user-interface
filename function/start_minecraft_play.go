@@ -213,7 +213,6 @@ func (f *Function) startMinecraftPlay(config define.RentalServerConfig) (
 	}
 
 	userPermissionLevel,
-		providedPeAuthData,
 		aesCipher,
 		disableOpertorVerify,
 		haveSkinCacheData,
@@ -243,7 +242,6 @@ func (f *Function) startMinecraftPlay(config define.RentalServerConfig) (
 		RentalServerNumber:   config.ServerNumber,
 		RentalServerPasscode: config.ServerPassCode,
 		AuthServerAddress:    account.AuthServerAddress(),
-		ProvidedPeAuthData:   providedPeAuthData,
 		GameSavesAESCipher:   aesCipher,
 		DisableOpertorVerify: disableOpertorVerify,
 		UseCustomSkin:        useCustomSkin,

@@ -180,12 +180,6 @@ func (p *Panel) formatUserData() (content string) {
 		content += "  - 封禁状态: §r§a未封禁§r\n"
 	}
 
-	if len(userData.ProvidedPeAuthData) > 0 {
-		content += "  - PE Auth: §r§a正在使用§r\n"
-	} else {
-		content += "  - PE Auth: §r§7未使用§r\n"
-	}
-
 	if userData.DisableGlobalOpertorVerify {
 		content += "  - 无权限进入任何租赁服: §r§a已授权§r\n"
 	} else {

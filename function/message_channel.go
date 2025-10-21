@@ -7,9 +7,8 @@ type MessageFromFronted struct {
 	RentalServerNumber   string
 	RentalServerPasscode string
 
-	AuthServerAddress  string
-	AuthServerToken    string
-	ProvidedPeAuthData string
+	AuthServerAddress string
+	AuthServerToken   string
 
 	GameSavesAESCipher   []byte
 	DisableOpertorVerify bool

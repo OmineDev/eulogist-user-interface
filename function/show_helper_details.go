@@ -9,19 +9,25 @@ import (
 	"github.com/ToolDelta-Basic/gophertunnel/minecraft/protocol"
 )
 
+const (
+	AccountTypeMpayUser uint8 = iota
+	AccountTypePeAuth
+	AccountTypeSaAuth
+)
+
 // HelperInfoRequest ..
 type HelperInfoRequest struct {
 	Token string `json:"token,omitempty"`
 }
 
-// UserInfoResponse ..
+// HelperInfoResponse ..
 type HelperInfoResponse struct {
-	ErrorInfo            string `json:"error_info"`
-	NetEaseRequireVerify bool   `json:"netease_require_verify"`
-	VerifyURL            string `json:"verify_url"`
-	Success              bool   `json:"success"`
-	GameNickName         string `json:"game_nick_name"`
-	G79UserUID           string `json:"g79_user_uid"`
+	ErrorInfo         string `json:"error_info"`
+	Success           bool   `json:"success"`
+	AccountType       uint8  `json:"account_type"`
+	AccountExpireTime int64  `json:"account_expire_time"`
+	GameNickName      string `json:"game_nick_name"`
+	G79UserUID        string `json:"g79_user_uid"`
 }
 
 // ShowHelperDetails 向客户端展示其当前正在使用的 MC 账户的信息。
@@ -71,43 +77,66 @@ func (f *Function) ShowHelperDetails() error {
 		}
 
 		if !helpInfoResponse.Success {
-			isUserCancel, err := f.ShowAuthServerError(
-				helpInfoResponse.NetEaseRequireVerify,
-				helpInfoResponse.VerifyURL,
-				helpInfoResponse.ErrorInfo,
-			)
+			_, _, err := f.interact.SendFormAndWaitResponse(form.MessageForm{
+				Title:   "错误",
+				Content: helpInfoResponse.ErrorInfo,
+				Button1: "确定",
+				Button2: "返回上一级菜单",
+			})
 			if err != nil {
 				return fmt.Errorf("ShowHelperDetails: %v", err)
 			}
-			if !isUserCancel && helpInfoResponse.NetEaseRequireVerify {
-				continue
-			} else {
-				return nil
+			return nil
+		}
+
+		if helpInfoResponse.AccountType == AccountTypeMpayUser {
+			account.UpdateData(map[string]any{
+				"gameNickName":       helpInfoResponse.GameNickName,
+				"g79UserUID":         helpInfoResponse.G79UserUID,
+				"authHelperUniqueID": account.AuthServerSecret(),
+			})
+			f.userData.CurrentAuthServerAccount = protocol.Option(account)
+
+			for index, value := range f.userData.MultipleAuthServerAccounts {
+				if !value.IsStdAccount() {
+					continue
+				}
+				if value.AuthServerSecret() == account.AuthServerSecret() {
+					f.userData.MultipleAuthServerAccounts[index] = account
+				}
 			}
 		}
 
-		account.UpdateData(map[string]any{
-			"gameNickName":       helpInfoResponse.GameNickName,
-			"g79UserUID":         helpInfoResponse.G79UserUID,
-			"authHelperUniqueID": account.AuthServerSecret(),
-		})
-		f.userData.CurrentAuthServerAccount = protocol.Option(account)
-
-		for index, value := range f.userData.MultipleAuthServerAccounts {
-			if !value.IsStdAccount() {
-				continue
-			}
-			if value.AuthServerSecret() == account.AuthServerSecret() {
-				f.userData.MultipleAuthServerAccounts[index] = account
-			}
+		content := ""
+		switch helpInfoResponse.AccountType {
+		case AccountTypeMpayUser:
+			content = fmt.Sprintf(
+				"● 游戏昵称: %s\n● 账户类型: 内置验证服务账户",
+				account.FormatInGame(),
+			)
+		case AccountTypePeAuth:
+			content = fmt.Sprintf(
+				"● 游戏昵称: %s\n● 账户类型: 内置验证服务账户 (PE Auth)",
+				fmt.Sprintf(
+					"§r§l§e%s §r§l(§b%s§r§l)§r",
+					helpInfoResponse.GameNickName,
+					helpInfoResponse.G79UserUID,
+				),
+			)
+		case AccountTypeSaAuth:
+			content = fmt.Sprintf(
+				"● 游戏昵称: %s\n● 账户类型: 内置验证服务账户 (Sa Auth)",
+				fmt.Sprintf(
+					"§r§l§e%s §r§l(§b%s§r§l)§r",
+					helpInfoResponse.GameNickName,
+					helpInfoResponse.G79UserUID,
+				),
+			)
 		}
 
 		_, _, err = f.interact.SendFormAndWaitResponse(form.MessageForm{
-			Title: "账号详细信息",
-			Content: fmt.Sprintf(
-				"● 游戏昵称: %s\n● 账户类型: 内置验证服务账户",
-				account.FormatInGame(),
-			),
+			Title:   "账号详细信息",
+			Content: content,
 			Button1: "确定",
 			Button2: "取消",
 		})

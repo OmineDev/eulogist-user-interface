@@ -85,7 +85,7 @@ func (p *Panel) AuthHelperPanel() error {
 		case 5:
 			err = p.f.DevAskToken()
 		case 6:
-			err = p.f.SetPEAuth()
+			err = p.f.SetAuthData()
 		case 7:
 			return nil
 		}
