@@ -65,7 +65,7 @@ func (f *Function) GetGameSavesKey() error {
 	rentalServerNumber := resp.([]any)[1].(string)
 
 	gameSavesKeyResp, err := utils.SendAndGetHttpResponse[GameSavesKeyResponse](
-		fmt.Sprintf("%s/get_game_saves_key", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/get_game_saves_key", define.AddressEulogistAPI),
 		GameSavesKeyRequest{
 			Token:              f.config.EulogistToken,
 			RentalServerNumber: rentalServerNumber,
@@ -140,7 +140,7 @@ func (f *Function) BeforePlayPrepare(rentalServerNumber string) (
 
 	buf := bytes.NewBuffer(encrypted)
 	resp, err := http.Post(
-		fmt.Sprintf("%s/get_game_saves_key", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/get_game_saves_key", define.AddressEulogistAPI),
 		"application/json",
 		buf,
 	)

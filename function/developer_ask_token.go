@@ -73,7 +73,7 @@ func (f *Function) DevAskToken() error {
 	}
 
 	devTokenResp, err := utils.SendAndGetHttpResponse[DevTokenResp](
-		fmt.Sprintf("%s/dev_ask_token", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/dev_ask_token", define.AddressEulogistAPI),
 		DevTokenAsk{
 			Token:          f.config.EulogistToken,
 			HelperUniqueID: idxToHelperUniqueID[resp],
@@ -107,7 +107,7 @@ func (f *Function) DevAskToken() error {
 			},
 			form.ModalFormElementInput{
 				Text:        "Standard Auth Server Address",
-				Default:     define.StdAuthServerPhoenixAPI,
+				Default:     define.AddressPhoenixAPI,
 				PlaceHolder: "Standard Auth Server Address",
 			},
 			form.ModalFormElementInput{

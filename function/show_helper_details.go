@@ -67,7 +67,7 @@ func (f *Function) ShowHelperDetails() error {
 		}
 
 		helpInfoResponse, err := utils.SendAndGetHttpResponse[HelperInfoResponse](
-			fmt.Sprintf("%s/get_std_helper_info", define.StdAuthServerAddress),
+			fmt.Sprintf("%s/get_std_helper_info", define.AddressEulogistAPI),
 			HelperInfoRequest{
 				Token: f.config.EulogistToken,
 			},

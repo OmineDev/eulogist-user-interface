@@ -63,7 +63,7 @@ func (f *Function) AdminChangeManager(eulogistUserName string) error {
 		}
 
 		managerChangeResp, err := utils.SendAndGetHttpResponse[ManagerChangeResponse](
-			fmt.Sprintf("%s/admin_change_manager", define.StdAuthServerAddress),
+			fmt.Sprintf("%s/admin_change_manager", define.AddressEulogistAPI),
 			ManagerChangeRequest{
 				Token:            f.config.EulogistToken,
 				ActionType:       ActionTypeRequestServerList,
@@ -130,7 +130,7 @@ func (f *Function) adminChangeManagerEdit(eulogistUserName string) error {
 	}
 
 	managerChangeResp, err := utils.SendAndGetHttpResponse[ManagerChangeResponse](
-		fmt.Sprintf("%s/admin_change_manager", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/admin_change_manager", define.AddressEulogistAPI),
 		ManagerChangeRequest{
 			Token:            f.config.EulogistToken,
 			ActionType:       ActionTypeEditManageServer,
@@ -197,7 +197,7 @@ func (f *Function) adminChangeManagerRemove(
 		}
 
 		managerChangeResp, err := utils.SendAndGetHttpResponse[ManagerChangeResponse](
-			fmt.Sprintf("%s/admin_change_manager", define.StdAuthServerAddress),
+			fmt.Sprintf("%s/admin_change_manager", define.AddressEulogistAPI),
 			ManagerChangeRequest{
 				Token:            f.config.EulogistToken,
 				ActionType:       ActionTypeRemoveManageServer,

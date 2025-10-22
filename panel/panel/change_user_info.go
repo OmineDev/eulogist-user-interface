@@ -66,7 +66,7 @@ func (p *Panel) ChangeUserInfo() error {
 	}
 
 	userInfoChangeResp, err := utils.SendAndGetHttpResponse[UserInfoChangeResponse](
-		fmt.Sprintf("%s/change_user_info", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/change_user_info", define.AddressEulogistAPI),
 		UserInfoChangeRequest{
 			Token:             p.f.EulogistConfig().EulogistToken,
 			NewName:           newUserName,

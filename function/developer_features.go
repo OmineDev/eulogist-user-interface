@@ -26,7 +26,7 @@ type SetSkinCacheResponse struct {
 // sendSetSkinCacheRequest ..
 func (f *Function) sendSetSkinCacheRequest(skinDownloadURL string) error {
 	setSkinCacheResp, err := utils.SendAndGetHttpResponse[SetSkinCacheResponse](
-		fmt.Sprintf("%s/set_skin_cache", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/set_skin_cache", define.AddressEulogistAPI),
 		SetSkinCacheRequest{
 			Token:           f.config.EulogistToken,
 			SkinDownloadURL: skinDownloadURL,
@@ -66,7 +66,7 @@ type BuiltInSkinResponse struct {
 // UseBuiltInSkin ..
 func (f *Function) UseBuiltInSkin() (success bool, err error) {
 	builtInSkinResp, err := utils.SendAndGetHttpResponse[BuiltInSkinResponse](
-		fmt.Sprintf("%s/get_built_in_skin", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/get_built_in_skin", define.AddressEulogistAPI),
 		BuiltInSkinRequest{
 			Token: f.config.EulogistToken,
 		},

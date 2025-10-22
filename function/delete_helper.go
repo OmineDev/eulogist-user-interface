@@ -68,7 +68,7 @@ func (f *Function) DeleteHelper() error {
 		}
 
 		helperDeleteResponse, err := utils.SendAndGetHttpResponse[HelperDeleteResponse](
-			fmt.Sprintf("%s/delete_helper", define.StdAuthServerAddress),
+			fmt.Sprintf("%s/delete_helper", define.AddressEulogistAPI),
 			HelperDeleteRequest{
 				Token: f.config.EulogistToken,
 				Index: uint(resp),

@@ -26,7 +26,7 @@ type ChangeMainConfigResponse struct {
 // AdminChangeMainConfig ..
 func (f *Function) AdminChangeMainConfig(eulogistUserName string) error {
 	userInfoResponse, err := utils.SendAndGetHttpResponse[UserInfoResponse](
-		fmt.Sprintf("%s/request_user_info", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/request_user_info", define.AddressEulogistAPI),
 		UserInfoRequest{
 			Token:            f.config.EulogistToken,
 			RequestType:      RequestTypeGetUserInfoAdmin,
@@ -120,7 +120,7 @@ func (f *Function) AdminChangeMainConfig(eulogistUserName string) error {
 	canGetHelperToken := respList[8].(bool)
 
 	changeMainConfigResp, err := utils.SendAndGetHttpResponse[ChangeMainConfigResponse](
-		fmt.Sprintf("%s/admin_change_main_config", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/admin_change_main_config", define.AddressEulogistAPI),
 		ChangeMainConfigRequest{
 			Token:            f.config.EulogistToken,
 			EulogistUserName: eulogistUserName,

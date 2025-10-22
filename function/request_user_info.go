@@ -37,7 +37,7 @@ func (f *Function) RequestUserInfo(isReGet bool) error {
 		}
 
 		userInfoResponse, err := utils.SendAndGetHttpResponse[UserInfoResponse](
-			fmt.Sprintf("%s/request_user_info", define.StdAuthServerAddress),
+			fmt.Sprintf("%s/request_user_info", define.AddressEulogistAPI),
 			UserInfoRequest{
 				Token:       f.config.EulogistToken,
 				RequestType: RequestTypeGetUserInfoNormal,
