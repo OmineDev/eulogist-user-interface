@@ -14,8 +14,9 @@ const (
 )
 
 const (
-	StdAuthServerPhoenixAPI = "http://127.0.0.1:8080"
-	StdAuthServerAddress    = "http://127.0.0.1:8080/eulogist_api"
+	AddressPhoenixAPI  = "https://127.0.0.1:80"
+	AddressEulogistAPI = "https://127.0.0.1:80/eulogist_api"
+	AddressVitalityAPI = "https://127.0.0.1:80/vitality_api"
 )
 
 const (

@@ -60,7 +60,7 @@ func (f *Function) ChangeCurrentHelper() error {
 	}
 
 	helperChangeRespose, err = utils.SendAndGetHttpResponse[HelperChangeResponse](
-		fmt.Sprintf("%s/change_current_helper", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/change_current_helper", define.AddressEulogistAPI),
 		HelperChangeRequest{
 			Token: f.config.EulogistToken,
 			Index: uint(resp),

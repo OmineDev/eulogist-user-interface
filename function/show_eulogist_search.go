@@ -47,7 +47,7 @@ func (f *Function) ShowEulogistSearch() (eulogistUserName string, isUserCancel b
 	filterString := resp.([]any)[1].(string)
 
 	userSearchResponse, err := utils.SendAndGetHttpResponse[UserSearchResponse](
-		fmt.Sprintf("%s/search_eulogist_user", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/search_eulogist_user", define.AddressEulogistAPI),
 		UserSearchRequest{
 			Token:        f.config.EulogistToken,
 			FilterString: filterString,

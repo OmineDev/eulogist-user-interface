@@ -96,7 +96,7 @@ func (f *Function) ModifyCustomHelper() error {
 		authServerToken := answerList[2].(string)
 
 		customHelperModifyResp, err := utils.SendAndGetHttpResponse[CustomHelperModifyResponse](
-			fmt.Sprintf("%s/modify_custom_helper", define.StdAuthServerAddress),
+			fmt.Sprintf("%s/modify_custom_helper", define.AddressEulogistAPI),
 			CustomHelperModifyRequest{
 				Token:             f.config.EulogistToken,
 				Index:             idx,

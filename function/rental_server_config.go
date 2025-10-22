@@ -34,7 +34,7 @@ func (f *Function) sendRentalServerConfigRequest(
 	serverPasscode string,
 ) error {
 	rentalServerListResp, err := utils.SendAndGetHttpResponse[RentalServerListResponse](
-		fmt.Sprintf("%s/rental_server_list", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/rental_server_list", define.AddressEulogistAPI),
 		RentalServerListRequest{
 			Token:          f.config.EulogistToken,
 			ActionType:     actionType,

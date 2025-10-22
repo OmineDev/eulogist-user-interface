@@ -108,7 +108,7 @@ func (f *Function) register() error {
 	userPasswordSum256 := sha256.Sum256([]byte(userPassword + define.UserPasswordSalt))
 
 	loginResponse, err := utils.SendAndGetHttpResponse[LoginResponse](
-		fmt.Sprintf("%s/register_or_login", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/register_or_login", define.AddressEulogistAPI),
 		LoginRequest{
 			IsRegister:         true,
 			UserName:           userName,
@@ -176,7 +176,7 @@ func (f *Function) login() error {
 	userPasswordSum256 := sha256.Sum256([]byte(userPassword + define.UserPasswordSalt))
 
 	loginResponse, err := utils.SendAndGetHttpResponse[LoginResponse](
-		fmt.Sprintf("%s/register_or_login", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/register_or_login", define.AddressEulogistAPI),
 		LoginRequest{
 			IsRegister:         false,
 			UserName:           userName,

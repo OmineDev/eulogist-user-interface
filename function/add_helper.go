@@ -144,7 +144,7 @@ func (f *Function) addCustomHelper() error {
 	authServerToken := respList[2].(string)
 
 	helperAddResponse, err = utils.SendAndGetHttpResponse[HelperAddResponse](
-		fmt.Sprintf("%s/add_helper_normal", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/add_helper_normal", define.AddressEulogistAPI),
 		HelperAddRequest{
 			Token:             f.config.EulogistToken,
 			ActionType:        ActionTypeAddCustomHelper,
@@ -263,7 +263,7 @@ func (f *Function) addStdHelperByEmail() error {
 
 	for {
 		helperAddResponse, err = utils.SendAndGetHttpResponse[HelperAddResponse](
-			fmt.Sprintf("%s/add_helper_normal", define.StdAuthServerAddress),
+			fmt.Sprintf("%s/add_helper_normal", define.AddressEulogistAPI),
 			HelperAddRequest{
 				Token:           f.config.EulogistToken,
 				ActionType:      ActionTypeAddStdEmailHelper,
@@ -369,7 +369,7 @@ func (f *Function) addStdHelperByMobile() error {
 
 	for {
 		smsHelperAddResp, err := utils.SendAndGetHttpResponse[SMSHelperAddResponse](
-			fmt.Sprintf("%s/add_std_helper_sms", define.StdAuthServerAddress),
+			fmt.Sprintf("%s/add_std_helper_sms", define.AddressEulogistAPI),
 			SMSHelperAddRequest{
 				Token:           f.config.EulogistToken,
 				TransactionUUID: tranUUID,
@@ -433,7 +433,7 @@ func (f *Function) addStdHelperByMobile() error {
 	}
 
 	smsHelperAddResp, err := utils.SendAndGetHttpResponse[SMSHelperAddResponse](
-		fmt.Sprintf("%s/add_std_helper_sms", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/add_std_helper_sms", define.AddressEulogistAPI),
 		SMSHelperAddRequest{
 			Token:           f.config.EulogistToken,
 			TransactionUUID: tranUUID,

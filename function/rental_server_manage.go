@@ -91,7 +91,7 @@ func (f *Function) rsmUpdatePermission(
 	canGetGameSavesKeyCipher := respList[3].(bool)
 
 	allowListUpdateResp, err := utils.SendAndGetHttpResponse[AllowListUpdateResponse](
-		fmt.Sprintf("%s/update_allow_list_config", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/update_allow_list_config", define.AddressEulogistAPI),
 		AllowListUpdateRequest{
 			Token:                    f.config.EulogistToken,
 			RentalServerNumber:       rentalServerNumber,
@@ -154,7 +154,7 @@ type AllowListGetResponse struct {
 // RentalServerManageModify ..
 func (f *Function) RentalServerManageModify(rentalServerNumber string) error {
 	allowListGetResp, err := utils.SendAndGetHttpResponse[AllowListGetResponse](
-		fmt.Sprintf("%s/get_allow_list_config", define.StdAuthServerAddress),
+		fmt.Sprintf("%s/get_allow_list_config", define.AddressEulogistAPI),
 		AllowListGetRequest{
 			Token:              f.config.EulogistToken,
 			RentalServerNumber: rentalServerNumber,
@@ -234,7 +234,7 @@ type AllowListDeleteResponse struct {
 func (f *Function) RentalServerManageDelete(rentalServerNumber string) error {
 	for {
 		allowListGetResp, err := utils.SendAndGetHttpResponse[AllowListGetResponse](
-			fmt.Sprintf("%s/get_allow_list_config", define.StdAuthServerAddress),
+			fmt.Sprintf("%s/get_allow_list_config", define.AddressEulogistAPI),
 			AllowListGetRequest{
 				Token:              f.config.EulogistToken,
 				RentalServerNumber: rentalServerNumber,
@@ -297,7 +297,7 @@ func (f *Function) RentalServerManageDelete(rentalServerNumber string) error {
 		}
 
 		allowListDeleteResp, err := utils.SendAndGetHttpResponse[AllowListDeleteResponse](
-			fmt.Sprintf("%s/delete_allow_list_config", define.StdAuthServerAddress),
+			fmt.Sprintf("%s/delete_allow_list_config", define.AddressEulogistAPI),
 			AllowListDeleteRequest{
 				Token:              f.config.EulogistToken,
 				RentalServerNumber: rentalServerNumber,

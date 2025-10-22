@@ -133,7 +133,7 @@ func (f *Function) SetAuthData() error {
 		}
 
 		authDataSetResp, err := utils.SendAndGetHttpResponse[AuthDataSetResponse](
-			fmt.Sprintf("%s/set_auth_data", define.StdAuthServerAddress),
+			fmt.Sprintf("%s/set_auth_data", define.AddressEulogistAPI),
 			AuthDataSetRequest{
 				Token:   f.config.EulogistToken,
 				DoClean: doClean,
