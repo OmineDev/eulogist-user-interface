@@ -18,6 +18,10 @@ func (p *Panel) AuthHelperPanel() error {
 					Icon: form.ActionFormIconNone{},
 				},
 				{
+					Text: "设置账号的登录状态",
+					Icon: form.ActionFormIconNone{},
+				},
+				{
 					Text: "切换正在使用的 MC 账号",
 					Icon: form.ActionFormIconNone{},
 				},
@@ -35,10 +39,6 @@ func (p *Panel) AuthHelperPanel() error {
 				},
 				{
 					Text: "下载标准验证服务的账户凭据",
-					Icon: form.ActionFormIconNone{},
-				},
-				{
-					Text: "设置账号登录状态",
 					Icon: form.ActionFormIconNone{},
 				},
 				{
@@ -75,17 +75,17 @@ func (p *Panel) AuthHelperPanel() error {
 		case 0:
 			err = p.f.ShowHelperDetails()
 		case 1:
-			err = p.f.ChangeCurrentHelper()
+			err = p.f.SetLoginStates()
 		case 2:
-			err = p.f.AddNewHelper()
+			err = p.f.ChangeCurrentHelper()
 		case 3:
-			err = p.f.ModifyCustomHelper()
+			err = p.f.AddNewHelper()
 		case 4:
-			err = p.f.DeleteHelper()
+			err = p.f.ModifyCustomHelper()
 		case 5:
-			err = p.f.DevAskToken()
+			err = p.f.DeleteHelper()
 		case 6:
-			err = p.f.SetAuthData()
+			err = p.f.DevAskToken()
 		case 7:
 			return nil
 		}
