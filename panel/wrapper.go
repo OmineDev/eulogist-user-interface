@@ -95,7 +95,7 @@ func MainEntry(realAddress string, showAddress string, bedrockVersion string) (
 
 			if exitGame {
 				_ = wrapper.server.MinecraftConn().WritePacket(&packet.Disconnect{
-					Reason:  55, // DisconnectReasonKicked
+					Reason:  packet.DisconnectReasonKicked,
 					Message: "感谢您的使用, 期待下次与您相会！",
 				})
 				_ = wrapper.server.CloseServer()
