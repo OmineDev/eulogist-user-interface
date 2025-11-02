@@ -2,6 +2,7 @@ package function
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/OmineDev/eulogist-user-interface/define"
 	"github.com/OmineDev/eulogist-user-interface/form"
@@ -111,26 +112,38 @@ func (f *Function) ShowHelperDetails() error {
 		switch helpInfoResponse.AccountType {
 		case AccountTypeMpayUser:
 			content = fmt.Sprintf(
-				"● 游戏昵称: %s\n● 账户类型: 内置验证服务账户",
+				""+
+					"● 游戏昵称: %s\n"+
+					"● 账户类型: 内置验证服务账户\n"+
+					"● 会话过期时间: §r§b%s§r",
 				account.FormatInGame(),
+				time.Unix(helpInfoResponse.AccountExpireTime, 0).Format(time.DateTime),
 			)
 		case AccountTypePeAuth:
 			content = fmt.Sprintf(
-				"● 游戏昵称: %s\n● 账户类型: 内置验证服务账户 (Pe Auth)",
+				""+
+					"● 游戏昵称: %s\n"+
+					"● 账户类型: 内置验证服务账户 (Pe Auth)\n"+
+					"● 会话过期时间: §r§b%s§r",
 				fmt.Sprintf(
 					"§r§l§e%s §r§l(§b%s§r§l)§r",
 					helpInfoResponse.GameNickName,
 					helpInfoResponse.G79UserUID,
 				),
+				time.Unix(helpInfoResponse.AccountExpireTime, 0).Format(time.DateTime),
 			)
 		case AccountTypeSaAuth:
 			content = fmt.Sprintf(
-				"● 游戏昵称: %s\n● 账户类型: 内置验证服务账户 (Sa Auth)",
+				""+
+					"● 游戏昵称: %s\n"+
+					"● 账户类型: 内置验证服务账户 (Sa Auth)\n"+
+					"● 会话过期时间: §r§b%s§r",
 				fmt.Sprintf(
 					"§r§l§e%s §r§l(§b%s§r§l)§r",
 					helpInfoResponse.GameNickName,
 					helpInfoResponse.G79UserUID,
 				),
+				time.Unix(helpInfoResponse.AccountExpireTime, 0).Format(time.DateTime),
 			)
 		}
 
