@@ -12,8 +12,11 @@ import (
 	"github.com/YingLunTown-DreamLand/gophertunnel/minecraft/resource"
 )
 
-//go:embed depends.mcpack
-var dependsResourcesPack []byte
+//go:embed packs/depends.mcpack
+var dependsPack []byte
+
+//go:embed packs/falling_block.mcpack
+var fallingBlockPack []byte
 
 // Server 简单的实现了一个 MC 服务器，
 // 以用于运行一个赞颂者前置交互服务
@@ -43,7 +46,11 @@ func (s *Server) RunServer(address string) error {
 		return fmt.Errorf("RunServer: Server has been closed")
 	}
 
-	pack, err := resource.Read(bytes.NewBuffer(dependsResourcesPack))
+	packA, err := resource.Read(bytes.NewBuffer(dependsPack))
+	if err != nil {
+		return fmt.Errorf("RunServer: %v", err)
+	}
+	packB, err := resource.Read(bytes.NewBuffer(fallingBlockPack))
 	if err != nil {
 		return fmt.Errorf("RunServer: %v", err)
 	}
@@ -54,7 +61,7 @@ func (s *Server) RunServer(address string) error {
 		StatusProvider: minecraft.NewStatusProvider(
 			"Eulogist", "Eulogist",
 		),
-		ResourcePacks:        []*resource.Pack{pack},
+		ResourcePacks:        []*resource.Pack{packA, packB},
 		TexturePacksRequired: true,
 	}
 
