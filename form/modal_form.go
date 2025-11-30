@@ -32,11 +32,11 @@ type ModalFormElementDropdown struct {
 
 // 可拖拽的进度条
 type ModalFormElementSlider struct {
-	Text    string `json:"text"`    // 进度条的标题
-	Min     int    `json:"min"`     // 进度条的最小值
-	Max     int    `json:"max"`     // 进度条的最大值
-	Step    int    `json:"step"`    // 用户调整进度条的最小单位 (或步进长度)
-	Default int    `json:"default"` // 进度条的默认值
+	Text    string  `json:"text"`    // 进度条的标题
+	Min     float64 `json:"min"`     // 进度条的最小值
+	Max     float64 `json:"max"`     // 进度条的最大值
+	Step    float64 `json:"step"`    // 用户调整进度条的最小单位 (或步进长度)
+	Default float64 `json:"default"` // 进度条的默认值
 }
 
 // 滑块
