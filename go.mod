@@ -3,7 +3,7 @@ module github.com/OmineDev/eulogist-user-interface
 go 1.24.0
 
 require (
-	github.com/YingLunTown-DreamLand/gophertunnel v1.53.0
+	github.com/YingLunTown-DreamLand/gophertunnel v1.53.1
 	github.com/deatil/go-cryptobin v1.1.1005
 )
 
@@ -18,9 +18,9 @@ require (
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
-	golang.org/x/crypto v0.43.0 // indirect
-	golang.org/x/sys v0.37.0 // indirect
-	golang.org/x/term v0.36.0 // indirect
+	golang.org/x/crypto v0.44.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
+	golang.org/x/term v0.37.0 // indirect
 )
 
 require (
@@ -32,7 +32,7 @@ require (
 	github.com/klauspost/compress v1.18.1 // indirect
 	github.com/pterm/pterm v0.12.81
 	github.com/sandertv/go-raknet v1.14.3-0.20250305181847-6af3e95113d6 // indirect
-	golang.org/x/net v0.46.0 // indirect
-	golang.org/x/oauth2 v0.32.0 // indirect
-	golang.org/x/text v0.30.0 // indirect
+	golang.org/x/net v0.47.0 // indirect
+	golang.org/x/oauth2 v0.33.0 // indirect
+	golang.org/x/text v0.31.0 // indirect
 )
