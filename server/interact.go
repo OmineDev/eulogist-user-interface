@@ -144,7 +144,7 @@ func (i *Interact) sendFormAndWaitResponse(
 				case form.ModalFormElementDropdown:
 					result = append(result, int32(value.(float64)))
 				case form.ModalFormElementSlider:
-					result = append(result, int32(value.(float64)))
+					result = append(result, value.(float64))
 				case form.ModalFormElementStepSlider:
 					result = append(result, int32(value.(float64)))
 				default:
@@ -290,7 +290,7 @@ func (i *Interact) sendLargeActionFormAndWaitResponse(
 //   - [form.ModalFormElementInput] -> string
 //   - [form.ModalFormElementToggle] -> bool
 //   - [form.ModalFormElementDropdown] -> int32
-//   - [form.ModalFormElementSlider] -> int32
+//   - [form.ModalFormElementSlider] -> float64
 //   - [form.ModalFormElementStepSlider] -> int32
 //
 // isUserCancel 指示表单是否是由用户通过叉号 (×) 关闭的
