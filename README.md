@@ -1,3 +1,3 @@
 ## Eulogist User Interface
 
-Provide fronted implements (UI) for the next gen of **Eulogist**.
+Provide frontend implements (UI) for the next gen of **Eulogist**.
