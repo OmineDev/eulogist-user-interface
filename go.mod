@@ -4,6 +4,7 @@ go 1.26
 
 require (
 	github.com/ToolDelta-Basic/gophertunnel v1.53.0
+	github.com/YingLunTown-DreamLand/gophertunnel v1.53.2
 	github.com/deatil/go-cryptobin v1.1.1005
 )
 
