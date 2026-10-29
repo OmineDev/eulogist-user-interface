@@ -1,6 +1,6 @@
 package define
 
-import "github.com/ToolDelta-Basic/gophertunnel/minecraft/protocol"
+import "github.com/YingLunTown-DreamLand/gophertunnel/minecraft/protocol"
 
 type RentalServerConfig struct {
 	ServerNumber   string `json:"server_number"`

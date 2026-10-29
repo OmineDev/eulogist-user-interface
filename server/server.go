@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/ToolDelta-Basic/gophertunnel/minecraft"
-	"github.com/ToolDelta-Basic/gophertunnel/minecraft/protocol"
-	"github.com/ToolDelta-Basic/gophertunnel/minecraft/protocol/packet"
-	"github.com/ToolDelta-Basic/gophertunnel/minecraft/resource"
+	"github.com/YingLunTown-DreamLand/gophertunnel/minecraft"
+	"github.com/YingLunTown-DreamLand/gophertunnel/minecraft/protocol"
+	"github.com/YingLunTown-DreamLand/gophertunnel/minecraft/protocol/packet"
+	"github.com/YingLunTown-DreamLand/gophertunnel/minecraft/resource"
 )
 
 //go:embed depends.mcpack

@@ -8,7 +8,7 @@ import (
 	"github.com/OmineDev/eulogist-user-interface/function"
 	"github.com/OmineDev/eulogist-user-interface/panel/panel"
 	"github.com/OmineDev/eulogist-user-interface/server"
-	"github.com/ToolDelta-Basic/gophertunnel/minecraft/protocol/packet"
+	"github.com/YingLunTown-DreamLand/gophertunnel/minecraft/protocol/packet"
 	"github.com/pterm/pterm"
 )
 

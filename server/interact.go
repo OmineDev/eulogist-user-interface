@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/OmineDev/eulogist-user-interface/form"
-	"github.com/ToolDelta-Basic/gophertunnel/minecraft/protocol"
-	"github.com/ToolDelta-Basic/gophertunnel/minecraft/protocol/packet"
+	"github.com/YingLunTown-DreamLand/gophertunnel/minecraft/protocol"
+	"github.com/YingLunTown-DreamLand/gophertunnel/minecraft/protocol/packet"
 )
 
 // Interact 是客户端和赞颂者假服务器的表单交互实现

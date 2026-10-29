@@ -15,8 +15,6 @@ github.com/MarvinJWendt/testza v0.3.0/go.mod h1:eFcL4I0idjtIx8P9C6KkAuLgATNKpX4/
 github.com/MarvinJWendt/testza v0.4.2/go.mod h1:mSdhXiKH8sg/gQehJ63bINcCKp7RtYewEjXsvsVUPbE=
 github.com/MarvinJWendt/testza v0.5.2 h1:53KDo64C1z/h/d/stCYCPY69bt/OSwjq5KpFNwi+zB4=
 github.com/MarvinJWendt/testza v0.5.2/go.mod h1:xu53QFE5sCdjtMCKk8YMQ2MnymimEctc4n3EjyIYvEY=
-github.com/ToolDelta-Basic/gophertunnel v1.53.0 h1:MX0Yh64h4bmVHs//A0PGv6rgQkssbTiOfbfOHQUrPVM=
-github.com/ToolDelta-Basic/gophertunnel v1.53.0/go.mod h1:ttr9oR5SXiXAXkW+B7FMTKmw5a6HDxcLAXbyao4tqZk=
 github.com/YingLunTown-DreamLand/gophertunnel v1.53.2 h1:S3gQgGOeafJxDvbYW2zCQSRGpzBJ/4ByXLqtN3YSoAY=
 github.com/YingLunTown-DreamLand/gophertunnel v1.53.2/go.mod h1:NfpWrcYpaCUCjrphd5cZjQVXbc8ZiK4J0hHWvylb9zk=
 github.com/atomicgo/cursor v0.0.1/go.mod h1:cBON2QmmrysudxNBFthvMtN32r3jxVRIvzkUiF/RuIk=
